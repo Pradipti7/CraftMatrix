@@ -1,6 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
 
-// ---- Palette ----
 const INK = "#12141C";
 const LINE = "#262A3A";
 const PAPER = "#F1EFE7";
@@ -120,7 +119,7 @@ function GridControls({ cols, rows, onColsChange, onRowsChange }) {
   );
 }
 
-export default function CraftMatrixLanding() {
+export default function CraftMatrixLanding({ onNavigateToLogin }) {
   const [ready, setReady] = useState(false);
   const [cols, setCols] = useState(24);
   const [rows, setRows] = useState(14);
@@ -348,6 +347,7 @@ export default function CraftMatrixLanding() {
           <button
             type="button"
             className="cm-cta"
+            onClick={onNavigateToLogin}
             style={{
               position: "relative",
               marginTop: 40,

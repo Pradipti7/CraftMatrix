@@ -7,10 +7,12 @@ const MUTED = "#9CA0B4";
 const AMBER = "#FFB238";
 const TEAL = "#5EEAD4";
 
-export default function LoginPage({ onBack, onNavigateToSignup }) {
+export default function SignupPage({ onBack, onNavigateToLogin }) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
+  const [confirm, setConfirm] = useState("");
+  const [agree, setAgree] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -34,7 +36,7 @@ export default function LoginPage({ onBack, onNavigateToSignup }) {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@500&display=swap');
 
-        .login-input {
+        .signup-input {
           width: 100%;
           padding: 14px 16px;
           background-color: ${INK};
@@ -46,14 +48,14 @@ export default function LoginPage({ onBack, onNavigateToSignup }) {
           outline: none;
           transition: border-color 0.2s ease;
         }
-        .login-input:focus {
+        .signup-input:focus {
           border-color: ${AMBER};
         }
-        .login-input::placeholder {
+        .signup-input::placeholder {
           color: ${MUTED};
         }
 
-        .login-btn {
+        .signup-btn {
           width: 100%;
           padding: 16px;
           background-color: ${AMBER};
@@ -69,26 +71,27 @@ export default function LoginPage({ onBack, onNavigateToSignup }) {
           position: relative;
           transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
         }
-        .login-btn:hover {
+        .signup-btn:hover {
           transform: translateY(-2px);
           background-color: #ffc35e;
           box-shadow: 0 10px 30px -8px rgba(255,178,56,0.5);
         }
-        .login-btn:active {
+        .signup-btn:active {
           transform: translateY(0px) scale(0.98);
         }
 
-        .login-link {
+        .signup-link {
           color: ${AMBER};
           text-decoration: none;
           font-size: 0.85rem;
           transition: color 0.2s ease;
+          cursor: pointer;
         }
-        .login-link:hover {
+        .signup-link:hover {
           color: ${TEAL};
         }
 
-        .login-divider {
+        .signup-divider {
           display: flex;
           align-items: center;
           gap: 16px;
@@ -97,15 +100,15 @@ export default function LoginPage({ onBack, onNavigateToSignup }) {
           font-size: 0.75rem;
           letter-spacing: 0.1em;
         }
-        .login-divider::before,
-        .login-divider::after {
+        .signup-divider::before,
+        .signup-divider::after {
           content: "";
           flex: 1;
           height: 1px;
           background-color: ${LINE};
         }
 
-        .login-checkbox {
+        .signup-checkbox {
           display: flex;
           align-items: center;
           gap: 8px;
@@ -113,7 +116,7 @@ export default function LoginPage({ onBack, onNavigateToSignup }) {
           color: ${MUTED};
           font-size: 0.85rem;
         }
-        .login-checkbox input[type="checkbox"] {
+        .signup-checkbox input[type="checkbox"] {
           width: 16px;
           height: 16px;
           accent-color: ${AMBER};
@@ -124,7 +127,7 @@ export default function LoginPage({ onBack, onNavigateToSignup }) {
           from { opacity: 0; transform: translateY(12px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .login-animate {
+        .signup-animate {
           animation: fadeIn 0.6s cubic-bezier(.2,.8,.2,1) forwards;
         }
       `}</style>
@@ -154,9 +157,9 @@ export default function LoginPage({ onBack, onNavigateToSignup }) {
         }}
       />
 
-      {/* Login Card */}
+      {/* Signup Card */}
       <div
-        className="login-animate"
+        className="signup-animate"
         style={{
           position: "relative",
           zIndex: 10,
@@ -221,7 +224,7 @@ export default function LoginPage({ onBack, onNavigateToSignup }) {
               letterSpacing: "0.05em",
             }}
           >
-            Sign in to your account
+            Create your account
           </p>
         </div>
 
@@ -239,11 +242,35 @@ export default function LoginPage({ onBack, onNavigateToSignup }) {
                 textTransform: "uppercase",
               }}
             >
+              Full Name
+            </label>
+            <input
+              type="text"
+              className="signup-input"
+              placeholder="Your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: 8,
+                color: MUTED,
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: "0.7rem",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+              }}
+            >
               Email
             </label>
             <input
               type="email"
-              className="login-input"
+              className="signup-input"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -267,7 +294,7 @@ export default function LoginPage({ onBack, onNavigateToSignup }) {
             </label>
             <input
               type="password"
-              className="login-input"
+              className="signup-input"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -275,38 +302,69 @@ export default function LoginPage({ onBack, onNavigateToSignup }) {
             />
           </div>
 
+          <div style={{ marginBottom: 20 }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: 8,
+                color: MUTED,
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: "0.7rem",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+              }}
+            >
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              className="signup-input"
+              placeholder="••••••••"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+            />
+          </div>
+
           <div
             style={{
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+              alignItems: "flex-start",
+              gap: 8,
               marginBottom: 28,
             }}
           >
-            <label className="login-checkbox">
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-              />
-              <span>Remember me</span>
-            </label>
-            <a href="#" className="login-link">
-              Forgot password?
-            </a>
+            <input
+              type="checkbox"
+              checked={agree}
+              onChange={(e) => setAgree(e.target.checked)}
+              style={{
+                width: 16,
+                height: 16,
+                accentColor: AMBER,
+                cursor: "pointer",
+                marginTop: 2,
+              }}
+              required
+            />
+            <span style={{ color: MUTED, fontSize: "0.85rem", lineHeight: 1.4 }}>
+              I agree to the{" "}
+              <span className="signup-link">Terms of Service</span> and{" "}
+              <span className="signup-link">Privacy Policy</span>
+            </span>
           </div>
 
-          <button type="submit" className="login-btn">
-            Sign In
+          <button type="submit" className="signup-btn">
+            Create Account
           </button>
         </form>
 
-        <div className="login-divider">OR</div>
+        <div className="signup-divider">OR</div>
 
         <p style={{ textAlign: "center", color: MUTED, fontSize: "0.85rem" }}>
-          Don't have an account?{" "}
-          <span className="login-link" onClick={onNavigateToSignup} style={{ cursor: "pointer" }}>
-            Sign up
+          Already have an account?{" "}
+          <span className="signup-link" onClick={onNavigateToLogin}>
+            Sign in
           </span>
         </p>
       </div>
@@ -325,7 +383,7 @@ export default function LoginPage({ onBack, onNavigateToSignup }) {
           letterSpacing: "0.2em",
         }}
       >
-        <span style={{ color: "#3A3F55" }}>CRAFTMATRIX · LOGIN</span>
+        <span style={{ color: "#3A3F55" }}>CRAFTMATRIX · SIGNUP</span>
       </div>
     </div>
   );

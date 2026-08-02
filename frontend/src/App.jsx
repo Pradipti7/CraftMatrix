@@ -7,11 +7,19 @@ function App() {
   const [page, setPage] = useState('landing')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
+  const handleGoogleAuth = () => {
+    // Simulate Google authentication
+    // In production, this would redirect to Google OAuth
+    setIsLoggedIn(true)
+    setPage('landing')
+  }
+
   if (page === 'login') {
     return (
       <LoginPage
         onBack={() => setPage('landing')}
         onNavigateToSignup={() => setPage('signup')}
+        onGoogleAuth={handleGoogleAuth}
       />
     )
   }
@@ -21,6 +29,7 @@ function App() {
       <SignupPage
         onBack={() => setPage('login')}
         onNavigateToLogin={() => setPage('login')}
+        onGoogleAuth={handleGoogleAuth}
       />
     )
   }

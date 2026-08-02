@@ -143,23 +143,33 @@ export default function CraftMatrixLanding({
         width: "100%",
         minHeight: "100vh",
         overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "24px",
-        paddingTop: "80px",
         backgroundColor: INK,
         fontFamily: "'Inter', system-ui, sans-serif",
       }}
     >
-      <Navbar
-        isLoggedIn={isLoggedIn}
-        onLogin={onLogin}
-        onLogout={onLogout}
-        onStartCreating={onStartCreating}
-        onPreviousWork={onPreviousWork}
-      />
+      <div style={{ position: "relative", zIndex: 200 }}>
+        <Navbar
+          isLoggedIn={isLoggedIn}
+          onLogin={onLogin}
+          onLogout={onLogout}
+          onStartCreating={onStartCreating}
+          onPreviousWork={onPreviousWork}
+        />
+      </div>
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          minHeight: "100vh",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "24px",
+          paddingTop: "80px",
+        }}
+      >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@500&display=swap');
 
@@ -434,6 +444,7 @@ export default function CraftMatrixLanding({
           onRowsChange={setRows}
         />
       )}
+    </div>
     </div>
   );
 }

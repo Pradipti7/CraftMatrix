@@ -5,6 +5,7 @@ import SignupPage from './pages/SignupPage'
 
 function App() {
   const [page, setPage] = useState('landing')
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   if (page === 'login') {
     return (
@@ -24,7 +25,15 @@ function App() {
     )
   }
 
-  return <CraftMatrixLanding onNavigateToLogin={() => setPage('login')} />
+  return (
+    <CraftMatrixLanding
+      isLoggedIn={isLoggedIn}
+      onLogin={() => setPage('login')}
+      onLogout={() => setIsLoggedIn(false)}
+      onStartCreating={() => setPage('login')}
+      onPreviousWork={() => {}}
+    />
+  )
 }
 
 export default App

@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
+import Navbar from "../components/Navbar";
 
 const INK = "#12141C";
 const LINE = "#262A3A";
@@ -119,7 +120,13 @@ function GridControls({ cols, rows, onColsChange, onRowsChange }) {
   );
 }
 
-export default function CraftMatrixLanding({ onNavigateToLogin }) {
+export default function CraftMatrixLanding({
+  isLoggedIn,
+  onLogin,
+  onLogout,
+  onStartCreating,
+  onPreviousWork,
+}) {
   const [ready, setReady] = useState(false);
   const [cols, setCols] = useState(24);
   const [rows, setRows] = useState(14);
@@ -141,10 +148,18 @@ export default function CraftMatrixLanding({ onNavigateToLogin }) {
         alignItems: "center",
         justifyContent: "center",
         padding: "24px",
+        paddingTop: "80px",
         backgroundColor: INK,
         fontFamily: "'Inter', system-ui, sans-serif",
       }}
     >
+      <Navbar
+        isLoggedIn={isLoggedIn}
+        onLogin={onLogin}
+        onLogout={onLogout}
+        onStartCreating={onStartCreating}
+        onPreviousWork={onPreviousWork}
+      />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@500&display=swap');
 

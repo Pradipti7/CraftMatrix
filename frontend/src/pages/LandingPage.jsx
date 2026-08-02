@@ -362,7 +362,7 @@ export default function CraftMatrixLanding({
           <button
             type="button"
             className="cm-cta"
-            onClick={onNavigateToLogin}
+            onClick={onStartCreating}
             style={{
               position: "relative",
               marginTop: 40,

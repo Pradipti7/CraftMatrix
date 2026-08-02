@@ -126,6 +126,7 @@ export default function CraftMatrixLanding({
   onLogout,
   onStartCreating,
   onPreviousWork,
+  showGrid = false,
 }) {
   const [ready, setReady] = useState(false);
   const [cols, setCols] = useState(24);
@@ -436,7 +437,7 @@ export default function CraftMatrixLanding({
         )}
       </div>
 
-      {ready && (
+      {ready && showGrid && (
         <GridControls
           cols={cols}
           rows={rows}

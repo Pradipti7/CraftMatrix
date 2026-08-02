@@ -34,12 +34,25 @@ function App() {
     )
   }
 
+  if (page === 'grid') {
+    return (
+      <CraftMatrixLanding
+        isLoggedIn={isLoggedIn}
+        onLogin={() => setPage('login')}
+        onLogout={() => setIsLoggedIn(false)}
+        onStartCreating={() => {}}
+        onPreviousWork={() => {}}
+        showGrid={true}
+      />
+    )
+  }
+
   return (
     <CraftMatrixLanding
       isLoggedIn={isLoggedIn}
       onLogin={() => setPage('login')}
       onLogout={() => setIsLoggedIn(false)}
-      onStartCreating={() => setPage('login')}
+      onStartCreating={() => isLoggedIn ? setPage('grid') : setPage('login')}
       onPreviousWork={() => {}}
     />
   )

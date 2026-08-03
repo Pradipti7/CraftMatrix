@@ -2,6 +2,7 @@ import { useState } from 'react'
 import CraftMatrixLanding from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
+import GridPage from './pages/GridPage'
 
 function App() {
   const [page, setPage] = useState('landing')
@@ -36,14 +37,7 @@ function App() {
 
   if (page === 'grid') {
     return (
-      <CraftMatrixLanding
-        isLoggedIn={isLoggedIn}
-        onLogin={() => setPage('login')}
-        onLogout={() => setIsLoggedIn(false)}
-        onStartCreating={() => {}}
-        onPreviousWork={() => {}}
-        showGrid={true}
-      />
+      <GridPage onBack={() => setPage('landing')} />
     )
   }
 

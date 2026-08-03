@@ -390,6 +390,7 @@ export default function GridPage({ onBack }) {
   const [selectedColor, setSelectedColor] = useState("#FFB238");
   const [palette, setPalette] = useState(BASIC_COLORS.map((c) => c.hex));
   const [isPainting, setIsPainting] = useState(false);
+  const [showColorWheel, setShowColorWheel] = useState(true);
 
   const handleConfirmGrid = (c, r) => {
     setCols(c);
@@ -573,7 +574,8 @@ export default function GridPage({ onBack }) {
           padding: "20px 16px",
           display: "flex",
           flexDirection: "column",
-          gap: 24,
+          gap: 20,
+          zIndex: 10,
         }}
       >
         {/* Back + Title */}
@@ -646,8 +648,33 @@ export default function GridPage({ onBack }) {
           </div>
         </div>
 
-        {/* Color Wheel */}
-        <ColorWheel onSelectColor={handleAddToPalette} />
+        {/* Color Wheel Toggle */}
+        <button
+          type="button"
+          onClick={() => setShowColorWheel(!showColorWheel)}
+          style={{
+            width: "100%",
+            padding: "8px 12px",
+            backgroundColor: "transparent",
+            color: showColorWheel ? PAPER : MUTED,
+            border: `1px solid ${showColorWheel ? AMBER : LINE}`,
+            borderRadius: 4,
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: "0.7rem",
+            letterSpacing: "0.05em",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            transition: "border-color 0.2s ease, color 0.2s ease",
+          }}
+        >
+          <span>Color Wheel</span>
+          <span style={{ fontSize: "0.8rem" }}>{showColorWheel ? "−" : "+"}</span>
+        </button>
+
+        {/* Color Wheel (collapsible) */}
+        {showColorWheel && <ColorWheel onSelectColor={handleAddToPalette} />}
 
         {/* Divider */}
         <div style={{ height: 1, backgroundColor: LINE }} />
@@ -691,7 +718,7 @@ export default function GridPage({ onBack }) {
               padding: "10px",
               backgroundColor: "transparent",
               color: MUTED,
-            border: `1px solid #D1D5DB`,
+              border: `1px solid #D1D5DB`,
               borderRadius: 4,
               fontFamily: "'JetBrains Mono', monospace",
               fontSize: "0.7rem",

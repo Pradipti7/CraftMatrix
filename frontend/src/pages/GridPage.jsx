@@ -47,13 +47,13 @@ function GridSizeSelector({ onConfirm }) {
             margin: 0,
             fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 700,
-            color: PAPER,
+            color: INK,
             fontSize: "1.8rem",
           }}
         >
           Choose Your Grid
         </h2>
-        <p style={{ marginTop: 8, color: MUTED, fontSize: "0.9rem" }}>
+        <p style={{ marginTop: 8, color: "#6B7280", fontSize: "0.9rem" }}>
           Select the dimensions for your canvas
         </p>
       </div>
@@ -63,8 +63,8 @@ function GridSizeSelector({ onConfirm }) {
           display: "flex",
           gap: 48,
           padding: "32px 40px",
-          backgroundColor: "#1A1D2B",
-          border: `1px solid ${LINE}`,
+          backgroundColor: "#F9FAFB",
+          border: `1px solid #E5E7EB`,
           borderRadius: 6,
         }}
       >
@@ -72,7 +72,7 @@ function GridSizeSelector({ onConfirm }) {
           <span
             style={{
               fontFamily: "'JetBrains Mono', monospace",
-              color: MUTED,
+              color: "#6B7280",
               fontSize: "0.7rem",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
@@ -108,7 +108,7 @@ function GridSizeSelector({ onConfirm }) {
           <span
             style={{
               fontFamily: "'JetBrains Mono', monospace",
-              color: MUTED,
+              color: "#6B7280",
               fontSize: "0.7rem",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
@@ -149,7 +149,7 @@ function GridSizeSelector({ onConfirm }) {
           display: "grid",
           gridTemplateColumns: `repeat(${Math.min(cols, 16)}, 1fr)`,
           gridTemplateRows: `repeat(${Math.min(rows, 16)}, 1fr)`,
-          border: `1px solid ${LINE}`,
+          border: `1px solid #D1D5DB`,
           borderRadius: 4,
           overflow: "hidden",
         }}
@@ -158,9 +158,9 @@ function GridSizeSelector({ onConfirm }) {
           <div
             key={i}
             style={{
-              borderRight: `1px solid ${LINE}40`,
-              borderBottom: `1px solid ${LINE}40`,
-              backgroundColor: `${INK}80`,
+              borderRight: `1px solid #D1D5DB40`,
+              borderBottom: `1px solid #D1D5DB40`,
+              backgroundColor: "#F3F4F6",
             }}
           />
         ))}
@@ -447,7 +447,7 @@ export default function GridPage({ onBack }) {
           alignItems: "center",
           justifyContent: "center",
           padding: "24px",
-          backgroundColor: INK,
+          backgroundColor: "#FFFFFF",
           fontFamily: "'Inter', system-ui, sans-serif",
         }}
         onMouseUp={handleMouseUp}
@@ -459,7 +459,7 @@ export default function GridPage({ onBack }) {
           input[type="range"] {
             height: 4px;
             border-radius: 2px;
-            background: ${LINE};
+            background: #D1D5DB;
             outline: none;
             cursor: pointer;
           }
@@ -469,7 +469,7 @@ export default function GridPage({ onBack }) {
             height: 14px;
             border-radius: 50%;
             background: currentColor;
-            border: 2px solid ${INK};
+            border: 2px solid #FFFFFF;
             cursor: pointer;
           }
         `}</style>
@@ -479,17 +479,9 @@ export default function GridPage({ onBack }) {
           style={{
             position: "absolute",
             inset: 0,
-            opacity: 0.1,
-            backgroundImage: `linear-gradient(${LINE} 1px, transparent 1px), linear-gradient(90deg, ${LINE} 1px, transparent 1px)`,
+            opacity: 0.08,
+            backgroundImage: `linear-gradient(#D1D5DB 1px, transparent 1px), linear-gradient(90deg, #D1D5DB 1px, transparent 1px)`,
             backgroundSize: "60px 60px",
-          }}
-        />
-        <div
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: `radial-gradient(ellipse at center, ${INK}00 0%, ${INK}CC 62%, ${INK} 100%)`,
           }}
         />
 
@@ -500,7 +492,7 @@ export default function GridPage({ onBack }) {
             style={{
               background: "none",
               border: "none",
-              color: MUTED,
+              color: "#6B7280",
               cursor: "pointer",
               fontFamily: "'JetBrains Mono', monospace",
               fontSize: "0.75rem",
@@ -513,7 +505,7 @@ export default function GridPage({ onBack }) {
               transition: "color 0.2s ease",
             }}
             onMouseEnter={(e) => (e.currentTarget.style.color = AMBER)}
-            onMouseLeave={(e) => (e.currentTarget.style.color = MUTED)}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#6B7280")}
           >
             <span style={{ fontSize: "1rem" }}>&larr;</span>
             Back
@@ -533,7 +525,7 @@ export default function GridPage({ onBack }) {
         minHeight: "100vh",
         overflow: "hidden",
         display: "flex",
-        backgroundColor: INK,
+        backgroundColor: "#FFFFFF",
         fontFamily: "'Inter', system-ui, sans-serif",
       }}
       onMouseUp={handleMouseUp}
@@ -543,8 +535,8 @@ export default function GridPage({ onBack }) {
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@500&display=swap');
 
         .grid-cell {
-          border-right: 1px solid ${LINE}40;
-          border-bottom: 1px solid ${LINE}40;
+          border-right: 1px solid #D1D5DB;
+          border-bottom: 1px solid #D1D5DB;
           cursor: crosshair;
           transition: opacity 0.1s ease;
         }
@@ -699,7 +691,7 @@ export default function GridPage({ onBack }) {
               padding: "10px",
               backgroundColor: "transparent",
               color: MUTED,
-              border: `1px solid ${LINE}`,
+            border: `1px solid #D1D5DB`,
               borderRadius: 4,
               fontFamily: "'JetBrains Mono', monospace",
               fontSize: "0.7rem",
@@ -722,41 +714,171 @@ export default function GridPage({ onBack }) {
       </div>
 
       {/* Grid Canvas */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 32,
-          overflow: "auto",
-        }}
-      >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: `repeat(${cols}, 1fr)`,
-            gridTemplateRows: `repeat(${rows}, 1fr)`,
-            border: `1px solid ${LINE}`,
-            borderRadius: 2,
-            userSelect: "none",
-          }}
-        >
-          {grid.map((color, index) => (
-            <div
-              key={index}
-              className="grid-cell"
-              style={{
-                width: Math.min(28, (window.innerWidth - 340) / cols),
-                height: Math.min(28, (window.innerHeight - 80) / rows),
-                backgroundColor: color || `${INK}40`,
-              }}
-              onMouseDown={() => handleMouseDown(index)}
-              onMouseEnter={() => handleMouseEnter(index)}
-            />
-          ))}
-        </div>
-      </div>
+      {(() => {
+        const cellSize = Math.min(28, (window.innerWidth - 340) / cols);
+        const cellSizeH = Math.min(28, (window.innerHeight - 80) / rows);
+        const gridW = cols * cellSize;
+        const gridH = rows * cellSizeH;
+
+        return (
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 32,
+              overflow: "auto",
+            }}
+          >
+            <div style={{ position: "relative" }}>
+              {/* Top column labels */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: -14,
+                  left: 0,
+                  width: gridW,
+                  height: 14,
+                }}
+              >
+                {Array.from({ length: cols + 1 }, (_, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      position: "absolute",
+                      left: i * cellSize,
+                      top: 0,
+                      transform: "translateX(-50%)",
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: "0.6rem",
+                      color: "#9CA0B4",
+                      lineHeight: "14px",
+                    }}
+                  >
+                    {i === 0 ? "" : i}
+                  </div>
+                ))}
+              </div>
+
+              {/* Bottom column labels */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: gridH + 2,
+                  left: 0,
+                  width: gridW,
+                  height: 14,
+                }}
+              >
+                {Array.from({ length: cols + 1 }, (_, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      position: "absolute",
+                      left: i * cellSize,
+                      top: 0,
+                      transform: "translateX(-50%)",
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: "0.6rem",
+                      color: "#9CA0B4",
+                      lineHeight: "14px",
+                    }}
+                  >
+                    {i === 0 ? "" : i}
+                  </div>
+                ))}
+              </div>
+
+              {/* Left row labels */}
+              <div
+                style={{
+                  position: "absolute",
+                  left: -20,
+                  top: 0,
+                  height: gridH,
+                  width: 20,
+                }}
+              >
+                {Array.from({ length: rows + 1 }, (_, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      position: "absolute",
+                      top: i * cellSizeH,
+                      left: 0,
+                      transform: "translateY(-50%)",
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: "0.6rem",
+                      color: "#9CA0B4",
+                      width: "100%",
+                      textAlign: "right",
+                      paddingRight: 4,
+                    }}
+                  >
+                    {i === 0 ? "" : i}
+                  </div>
+                ))}
+              </div>
+
+              {/* Right row labels */}
+              <div
+                style={{
+                  position: "absolute",
+                  left: gridW + 2,
+                  top: 0,
+                  height: gridH,
+                  width: 20,
+                }}
+              >
+                {Array.from({ length: rows + 1 }, (_, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      position: "absolute",
+                      top: i * cellSizeH,
+                      left: 0,
+                      transform: "translateY(-50%)",
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: "0.6rem",
+                      color: "#9CA0B4",
+                      width: "100%",
+                      textAlign: "left",
+                      paddingLeft: 4,
+                    }}
+                  >
+                    {i === 0 ? "" : i}
+                  </div>
+                ))}
+              </div>
+
+              {/* The grid */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
+                  gridTemplateRows: `repeat(${rows}, ${cellSizeH}px)`,
+                  border: `1px solid #D1D5DB`,
+                  borderRadius: 2,
+                  userSelect: "none",
+                }}
+              >
+                {grid.map((color, index) => (
+                  <div
+                    key={index}
+                    className="grid-cell"
+                    style={{
+                      backgroundColor: color || "#F3F4F6",
+                    }}
+                    onMouseDown={() => handleMouseDown(index)}
+                    onMouseEnter={() => handleMouseEnter(index)}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

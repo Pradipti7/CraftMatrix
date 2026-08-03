@@ -29,6 +29,40 @@ const BASIC_COLORS = [
 function GridSizeSelector({ onConfirm }) {
   const [cols, setCols] = useState(16);
   const [rows, setRows] = useState(16);
+  const [colsInput, setColsInput] = useState("16");
+  const [rowsInput, setRowsInput] = useState("16");
+
+  const handleColsBlur = () => {
+    const val = parseInt(colsInput, 10);
+    if (!isNaN(val) && val >= 4 && val <= 100) {
+      setCols(val);
+      setColsInput(String(val));
+    } else {
+      setColsInput(String(cols));
+    }
+  };
+
+  const handleRowsBlur = () => {
+    const val = parseInt(rowsInput, 10);
+    if (!isNaN(val) && val >= 4 && val <= 100) {
+      setRows(val);
+      setRowsInput(String(val));
+    } else {
+      setRowsInput(String(rows));
+    }
+  };
+
+  const handleSliderCols = (e) => {
+    const val = Number(e.target.value);
+    setCols(val);
+    setColsInput(String(val));
+  };
+
+  const handleSliderRows = (e) => {
+    const val = Number(e.target.value);
+    setRows(val);
+    setRowsInput(String(val));
+  };
 
   return (
     <div
@@ -86,21 +120,31 @@ function GridSizeSelector({ onConfirm }) {
               min={4}
               max={48}
               value={cols}
-              onChange={(e) => setCols(Number(e.target.value))}
+              onChange={handleSliderCols}
               style={{ width: 120, accentColor: AMBER }}
             />
-            <span
+            <input
+              type="number"
+              min={4}
+              max={100}
+              value={colsInput}
+              onChange={(e) => setColsInput(e.target.value)}
+              onBlur={handleColsBlur}
+              onKeyDown={(e) => { if (e.key === "Enter") handleColsBlur(); }}
               style={{
-                color: AMBER,
+                width: 56,
+                padding: "6px 8px",
+                backgroundColor: "#FFFFFF",
+                border: "1px solid #D1D5DB",
+                borderRadius: 4,
+                color: INK,
                 fontFamily: "'JetBrains Mono', monospace",
-                fontSize: "1.2rem",
+                fontSize: "0.9rem",
                 fontWeight: 500,
-                minWidth: 36,
-                textAlign: "right",
+                textAlign: "center",
+                outline: "none",
               }}
-            >
-              {cols}
-            </span>
+            />
           </div>
         </label>
 
@@ -122,21 +166,31 @@ function GridSizeSelector({ onConfirm }) {
               min={4}
               max={48}
               value={rows}
-              onChange={(e) => setRows(Number(e.target.value))}
+              onChange={handleSliderRows}
               style={{ width: 120, accentColor: TEAL }}
             />
-            <span
+            <input
+              type="number"
+              min={4}
+              max={100}
+              value={rowsInput}
+              onChange={(e) => setRowsInput(e.target.value)}
+              onBlur={handleRowsBlur}
+              onKeyDown={(e) => { if (e.key === "Enter") handleRowsBlur(); }}
               style={{
-                color: TEAL,
+                width: 56,
+                padding: "6px 8px",
+                backgroundColor: "#FFFFFF",
+                border: "1px solid #D1D5DB",
+                borderRadius: 4,
+                color: INK,
                 fontFamily: "'JetBrains Mono', monospace",
-                fontSize: "1.2rem",
+                fontSize: "0.9rem",
                 fontWeight: 500,
-                minWidth: 36,
-                textAlign: "right",
+                textAlign: "center",
+                outline: "none",
               }}
-            >
-              {rows}
-            </span>
+            />
           </div>
         </label>
       </div>

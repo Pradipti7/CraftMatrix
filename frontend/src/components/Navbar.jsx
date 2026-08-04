@@ -7,7 +7,7 @@ const MUTED = "#9CA0B4";
 const AMBER = "#FFB238";
 const TEAL = "#5EEAD4";
 
-export default function Navbar({ isLoggedIn, onLogin, onLogout, onStartCreating, onPreviousWork }) {
+export default function Navbar({ isLoggedIn, user, onLogin, onLogout, onStartCreating, onPreviousWork }) {
   return (
     <>
       <style>{`
@@ -135,6 +135,37 @@ export default function Navbar({ isLoggedIn, onLogin, onLogout, onStartCreating,
 
           {isLoggedIn ? (
             <>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "4px 8px",
+                borderRadius: 4,
+              }}>
+                {user?.picture && (
+                  <img
+                    src={user.picture}
+                    alt={user.name}
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: "50%",
+                      border: `1px solid ${LINE}`,
+                    }}
+                  />
+                )}
+                <span style={{
+                  fontFamily: "'Inter', system-ui, sans-serif",
+                  fontSize: "0.8rem",
+                  color: PAPER,
+                  maxWidth: 100,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}>
+                  {user?.name || user?.email}
+                </span>
+              </div>
               <button
                 type="button"
                 className="cm-nav-btn cm-nav-btn-outline"

@@ -122,7 +122,7 @@ function GridControls({ cols, rows, onColsChange, onRowsChange }) {
 
 export default function CraftMatrixLanding({
   onStartCreating,
-  onPreviousWork,
+  onPatterns,
   showGrid = false,
 }) {
   const [ready, setReady] = useState(false);
@@ -148,7 +148,7 @@ export default function CraftMatrixLanding({
       <div style={{ position: "relative", zIndex: 200 }}>
         <Navbar
           onStartCreating={onStartCreating}
-          onPreviousWork={onPreviousWork}
+          onPatterns={onPatterns}
         />
       </div>
       <div

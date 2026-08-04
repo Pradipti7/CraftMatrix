@@ -1,0 +1,216 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@500&display=swap');
+
+/* ── Base ─────────────────────────────────────────── */
+:root {
+  --ink: #12141C;
+  --line: #262A3A;
+  --paper: #F1EFE7;
+  --muted: #9CA0B4;
+  --amber: #FFB238;
+  --teal: #5EEAD4;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* ── Animations ───────────────────────────────────── */
+@keyframes cmPulse {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.16; }
+}
+
+@keyframes cmLetterIn {
+  0% { opacity: 0; transform: translateY(0.5em); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cmFadeUp {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cmBounce {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-14px); }
+  50% { transform: translateY(-4px); }
+  70% { transform: translateY(-10px); }
+}
+
+/* ── Utility Classes ──────────────────────────────── */
+.cm-cell-pulse {
+  opacity: 0;
+  animation-name: cmPulse;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+.cm-letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.5em);
+  animation-name: cmLetterIn;
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(.2,.8,.2,1);
+  animation-fill-mode: forwards;
+}
+
+.cm-eyebrow, .cm-sub, .cm-cta {
+  opacity: 0;
+  animation-name: cmFadeUp;
+  animation-duration: 0.7s;
+  animation-timing-function: cubic-bezier(.2,.8,.2,1);
+  animation-fill-mode: forwards;
+}
+
+.cm-cta {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+.cm-cta:hover {
+  transform: translateY(-2px);
+  background-color: #ffc35e !important;
+  box-shadow: 0 10px 30px -8px rgba(255,178,56,0.5);
+}
+.cm-cta:hover .cm-corner {
+  border-color: var(--ink) !important;
+}
+.cm-cta:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+/* ── Grid Cell ────────────────────────────────────── */
+.grid-cell {
+  border-right: 1px solid #D1D5DB;
+  border-bottom: 1px solid #D1D5DB;
+  cursor: crosshair;
+  transition: opacity 0.1s ease;
+}
+.grid-cell:hover {
+  opacity: 0.8;
+}
+
+/* ── Palette ──────────────────────────────────────── */
+.palette-color {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.palette-color:hover {
+  transform: scale(1.1);
+}
+.palette-color.active {
+  border-color: var(--paper);
+  transform: scale(1.15);
+}
+
+/* ── Pattern Cards ────────────────────────────────── */
+.cm-pat-card {
+  background-color: #1A1D2B;
+  border: 1px solid var(--line);
+  border-radius: 6;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  cursor: default;
+}
+.cm-pat-card:hover {
+  border-color: var(--amber);
+  transform: translateY(-2px);
+}
+
+.cm-pat-btn {
+  padding: 8px 20px;
+  background-color: var(--amber);
+  color: var(--ink);
+  border: none;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.cm-pat-btn:hover {
+  background-color: #ffc35e;
+  transform: translateY(-1px);
+}
+
+.cm-pat-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background-color: var(--line);
+  color: var(--muted);
+}
+
+.cm-pat-filter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.cm-pat-filter:hover {
+  color: var(--paper);
+  border-color: var(--muted);
+}
+.cm-pat-filter.active {
+  color: var(--ink);
+  background-color: var(--amber);
+  border-color: var(--amber);
+}
+
+.cm-fab:hover {
+  animation: cmBounce 0.8s ease;
+}
+
+/* ── Range Inputs ─────────────────────────────────── */
+input[type="range"] {
+  height: 4px;
+  border-radius: 2px;
+  background: #D1D5DB;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: currentColor;
+  border: 2px solid #FFFFFF;
+  cursor: pointer;
+}
+
+/* ── Reduced Motion ───────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .cm-cell-pulse, .cm-letter, .cm-eyebrow, .cm-sub, .cm-cta {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

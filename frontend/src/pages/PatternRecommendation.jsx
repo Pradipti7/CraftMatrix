@@ -231,7 +231,7 @@ const CATEGORIES = ["All", "Flowers", "Anime", "Animals"];
 
 export default function PatternRecommendation({ onBack, onSelectPattern, onCreatePattern }) {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [fabPos, setFabPos] = useState({ x: window.innerWidth - 80, y: window.innerHeight - 80 });
+  const [fabPos, setFabPos] = useState({ x: window.innerWidth - 100, y: window.innerHeight * 0.7 });
   const [isDragging, setIsDragging] = useState(false);
   const dragOffset = useRef({ x: 0, y: 0 });
   const didDrag = useRef(false);
@@ -252,8 +252,8 @@ export default function PatternRecommendation({ onBack, onSelectPattern, onCreat
     const handlePointerMove = (e) => {
       didDrag.current = true;
       setFabPos({
-        x: Math.max(0, Math.min(window.innerWidth - 56, e.clientX - dragOffset.current.x)),
-        y: Math.max(0, Math.min(window.innerHeight - 56, e.clientY - dragOffset.current.y)),
+        x: Math.max(0, Math.min(window.innerWidth - 72, e.clientX - dragOffset.current.x)),
+        y: Math.max(0, Math.min(window.innerHeight - 72, e.clientY - dragOffset.current.y)),
       });
     };
 
@@ -290,6 +290,12 @@ export default function PatternRecommendation({ onBack, onSelectPattern, onCreat
         fontFamily: "'Inter', system-ui, sans-serif",
       }}
     >
+      <div style={{ position: "relative", zIndex: 200 }}>
+        <Navbar
+          onStartCreating={onCreatePattern}
+          onPatterns={() => {}}
+        />
+      </div>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@500&display=swap');
 
@@ -361,6 +367,16 @@ export default function PatternRecommendation({ onBack, onSelectPattern, onCreat
           background-color: ${AMBER};
           border-color: ${AMBER};
         }
+
+        @keyframes cmBounce {
+          0%, 100% { transform: translateY(0); }
+          30% { transform: translateY(-14px); }
+          50% { transform: translateY(-4px); }
+          70% { transform: translateY(-10px); }
+        }
+        .cm-fab:hover {
+          animation: cmBounce 0.8s ease;
+        }
       `}</style>
 
       {/* Header */}
@@ -371,30 +387,6 @@ export default function PatternRecommendation({ onBack, onSelectPattern, onCreat
           margin: "0 auto",
         }}
       >
-        <button
-          type="button"
-          onClick={onBack}
-          style={{
-            background: "none",
-            border: "none",
-            color: MUTED,
-            cursor: "pointer",
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: "0.75rem",
-            letterSpacing: "0.05em",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            padding: "6px 10px",
-            borderRadius: 4,
-            marginBottom: 32,
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = AMBER)}
-          onMouseLeave={(e) => (e.currentTarget.style.color = MUTED)}
-        >
-          <span>&larr;</span> Back
-        </button>
-
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
           <span style={{ width: 6, height: 6, backgroundColor: TEAL }} />
           <span
@@ -431,6 +423,7 @@ export default function PatternRecommendation({ onBack, onSelectPattern, onCreat
             fontSize: "1rem",
             lineHeight: 1.6,
             maxWidth: 560,
+            textAlign: "center",
           }}
         >
           Pick a pattern to jumpstart your grid. Each design loads directly into the
@@ -506,19 +499,20 @@ export default function PatternRecommendation({ onBack, onSelectPattern, onCreat
       {/* Draggable FAB */}
       <button
         type="button"
+        className="cm-fab"
         onPointerDown={handlePointerDown}
         onClick={handleFabClick}
         style={{
           position: "fixed",
           left: fabPos.x,
           top: fabPos.y,
-          width: 56,
-          height: 56,
+          width: 72,
+          height: 72,
           borderRadius: "50%",
           backgroundColor: AMBER,
           color: INK,
           border: "none",
-          fontSize: "1.5rem",
+          fontSize: "2rem",
           fontWeight: 700,
           cursor: isDragging ? "grabbing" : "grab",
           zIndex: 999,
@@ -526,19 +520,9 @@ export default function PatternRecommendation({ onBack, onSelectPattern, onCreat
           alignItems: "center",
           justifyContent: "center",
           boxShadow: "0 6px 24px -4px rgba(255,178,56,0.5)",
-          transition: isDragging ? "none" : "transform 0.2s ease, box-shadow 0.2s ease",
+          transition: isDragging ? "none" : "box-shadow 0.4s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
           userSelect: "none",
           touchAction: "none",
-        }}
-        onMouseEnter={(e) => {
-          if (!isDragging) {
-            e.currentTarget.style.transform = "scale(1.1)";
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!isDragging) {
-            e.currentTarget.style.transform = "scale(1)";
-          }
         }}
       >
         +

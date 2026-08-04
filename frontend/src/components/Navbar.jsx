@@ -7,7 +7,7 @@ const MUTED = "#9CA0B4";
 const AMBER = "#FFB238";
 const TEAL = "#5EEAD4";
 
-export default function Navbar({ isLoggedIn, onLogin, onLogout, onStartCreating, onPreviousWork }) {
+export default function Navbar({ onStartCreating, onPreviousWork }) {
   return (
     <>
       <style>{`
@@ -132,42 +132,13 @@ export default function Navbar({ isLoggedIn, onLogin, onLogout, onStartCreating,
           >
             Previous Work
           </button>
-
-          {isLoggedIn ? (
-            <>
-              <button
-                type="button"
-                className="cm-nav-btn cm-nav-btn-outline"
-                onClick={onStartCreating}
-              >
-                Start Creating
-              </button>
-              <button
-                type="button"
-                className="cm-nav-btn cm-nav-btn-ghost"
-                onClick={onLogout}
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                type="button"
-                className="cm-nav-btn cm-nav-btn-outline"
-                onClick={onStartCreating}
-              >
-                Start Creating
-              </button>
-              <button
-                type="button"
-                className="cm-nav-btn cm-nav-btn-primary"
-                onClick={onLogin}
-              >
-                Login
-              </button>
-            </>
-          )}
+          <button
+            type="button"
+            className="cm-nav-btn cm-nav-btn-primary"
+            onClick={onStartCreating}
+          >
+            Start Creating
+          </button>
         </div>
       </nav>
     </>

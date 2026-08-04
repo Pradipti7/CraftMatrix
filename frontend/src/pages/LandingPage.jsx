@@ -121,9 +121,6 @@ function GridControls({ cols, rows, onColsChange, onRowsChange }) {
 }
 
 export default function CraftMatrixLanding({
-  isLoggedIn,
-  onLogin,
-  onLogout,
   onStartCreating,
   onPreviousWork,
   showGrid = false,
@@ -150,9 +147,6 @@ export default function CraftMatrixLanding({
     >
       <div style={{ position: "relative", zIndex: 200 }}>
         <Navbar
-          isLoggedIn={isLoggedIn}
-          onLogin={onLogin}
-          onLogout={onLogout}
           onStartCreating={onStartCreating}
           onPreviousWork={onPreviousWork}
         />

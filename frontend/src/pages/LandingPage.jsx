@@ -247,23 +247,13 @@ export default function CraftMatrixLanding({
         }
       `}</style>
 
-      {/* ── Background Image ───────────────────────────────────── */}
-      {/*
-        Replace the src below with your own image path, e.g.:
-          src="/images/your-bg.jpg"
-        or use a URL:
-          src="https://example.com/your-bg.jpg"
-      */}
-      <img
-        src="https://placehold.co/1920x1080/12141C/262A3A?text=YOUR+BACKGROUND+IMAGE+HERE"
-        alt=""
+      {/* ── Background ──────────────────────────────────────────── */}
+      <div
         aria-hidden="true"
         style={{
           position: "absolute",
           inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
+          background: `linear-gradient(135deg, ${INK} 0%, #1A1D2B 50%, ${INK} 100%)`,
           zIndex: 0,
         }}
       />

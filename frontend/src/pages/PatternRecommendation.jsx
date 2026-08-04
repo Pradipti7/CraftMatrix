@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import Navbar from "../components/Navbar";
 
 const INK = "#12141C";
@@ -229,8 +229,51 @@ function PatternPreview({ pattern, cellSize = 14 }) {
 
 const CATEGORIES = ["All", "Flowers", "Anime", "Animals"];
 
-export default function PatternRecommendation({ onBack, onSelectPattern }) {
+export default function PatternRecommendation({ onBack, onSelectPattern, onCreatePattern }) {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [fabPos, setFabPos] = useState({ x: window.innerWidth - 80, y: window.innerHeight - 80 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+  const didDrag = useRef(false);
+
+  const handlePointerDown = useCallback((e) => {
+    e.preventDefault();
+    didDrag.current = false;
+    dragOffset.current = {
+      x: e.clientX - fabPos.x,
+      y: e.clientY - fabPos.y,
+    };
+    setIsDragging(true);
+  }, [fabPos]);
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handlePointerMove = (e) => {
+      didDrag.current = true;
+      setFabPos({
+        x: Math.max(0, Math.min(window.innerWidth - 56, e.clientX - dragOffset.current.x)),
+        y: Math.max(0, Math.min(window.innerHeight - 56, e.clientY - dragOffset.current.y)),
+      });
+    };
+
+    const handlePointerUp = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+  }, [isDragging]);
+
+  const handleFabClick = () => {
+    if (!didDrag.current) {
+      onCreatePattern();
+    }
+  };
 
   const filtered =
     activeCategory === "All"
@@ -459,6 +502,47 @@ export default function PatternRecommendation({ onBack, onSelectPattern }) {
           </div>
         ))}
       </div>
+
+      {/* Draggable FAB */}
+      <button
+        type="button"
+        onPointerDown={handlePointerDown}
+        onClick={handleFabClick}
+        style={{
+          position: "fixed",
+          left: fabPos.x,
+          top: fabPos.y,
+          width: 56,
+          height: 56,
+          borderRadius: "50%",
+          backgroundColor: AMBER,
+          color: INK,
+          border: "none",
+          fontSize: "1.5rem",
+          fontWeight: 700,
+          cursor: isDragging ? "grabbing" : "grab",
+          zIndex: 999,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 6px 24px -4px rgba(255,178,56,0.5)",
+          transition: isDragging ? "none" : "transform 0.2s ease, box-shadow 0.2s ease",
+          userSelect: "none",
+          touchAction: "none",
+        }}
+        onMouseEnter={(e) => {
+          if (!isDragging) {
+            e.currentTarget.style.transform = "scale(1.1)";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isDragging) {
+            e.currentTarget.style.transform = "scale(1)";
+          }
+        }}
+      >
+        +
+      </button>
     </div>
   );
 }

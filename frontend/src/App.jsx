@@ -26,6 +26,7 @@ function App() {
       <PatternRecommendation
         onBack={() => setPage('landing')}
         onSelectPattern={handleSelectPattern}
+        onCreatePattern={() => setPage('grid')}
       />
     )
   }

@@ -807,6 +807,22 @@ export default function GridPage({ onBack, initialPattern }) {
             Palette ({palette.length})
           </span>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <div
+              className={`palette-color ${selectedColor === null ? "active" : ""}`}
+              style={{
+                backgroundColor: "#F3F4F6",
+                border: `2px dashed ${LINE}`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.8rem",
+                color: MUTED,
+              }}
+              onClick={() => setSelectedColor(null)}
+              title="Eraser"
+            >
+              &#10005;
+            </div>
             {palette.map((color, i) => (
               <div
                 key={`${color}-${i}`}

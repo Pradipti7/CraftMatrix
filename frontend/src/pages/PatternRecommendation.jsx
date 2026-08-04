@@ -294,6 +294,7 @@ export default function PatternRecommendation({ onBack, onSelectPattern, onCreat
         <Navbar
           onStartCreating={onCreatePattern}
           onPatterns={() => {}}
+          onHome={onBack}
         />
       </div>
       <style>{`

@@ -35,6 +35,7 @@ function App() {
     <CraftMatrixLanding
       onStartCreating={() => setPage('grid')}
       onPatterns={() => setPage('patterns')}
+      onHome={() => setPage('landing')}
     />
   )
 }

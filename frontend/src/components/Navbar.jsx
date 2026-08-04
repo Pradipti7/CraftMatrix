@@ -7,7 +7,7 @@ const MUTED = "#9CA0B4";
 const AMBER = "#FFB238";
 const TEAL = "#5EEAD4";
 
-export default function Navbar({ onStartCreating, onPatterns }) {
+export default function Navbar({ onStartCreating, onPatterns, onHome }) {
   return (
     <>
       <style>{`
@@ -125,6 +125,13 @@ export default function Navbar({ onStartCreating, onPatterns }) {
         </div>
 
         <div className="cm-nav-links">
+          <button
+            type="button"
+            className="cm-nav-link"
+            onClick={onHome}
+          >
+            Home
+          </button>
           <button
             type="button"
             className="cm-nav-link"

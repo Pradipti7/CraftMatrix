@@ -494,6 +494,62 @@ export default function GridPage({ onBack, initialPattern }) {
     setGrid(Array.from({ length: cols * rows }, () => null));
   };
 
+  const handleExportPNG = () => {
+    const cellSize = 32;
+    const labelPad = 28;
+    const canvasW = cols * cellSize + labelPad;
+    const canvasH = rows * cellSize + labelPad;
+    const canvas = document.createElement("canvas");
+    canvas.width = canvasW;
+    canvas.height = canvasH;
+    const ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0, 0, canvasW, canvasH);
+
+    grid.forEach((color, i) => {
+      if (color) {
+        const x = (i % cols) * cellSize + labelPad;
+        const y = Math.floor(i / cols) * cellSize + labelPad;
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, cellSize, cellSize);
+      }
+    });
+
+    ctx.strokeStyle = "#D1D5DB";
+    ctx.lineWidth = 0.5;
+    for (let c = 0; c <= cols; c++) {
+      ctx.beginPath();
+      ctx.moveTo(c * cellSize + labelPad, labelPad);
+      ctx.lineTo(c * cellSize + labelPad, canvasH);
+      ctx.stroke();
+    }
+    for (let r = 0; r <= rows; r++) {
+      ctx.beginPath();
+      ctx.moveTo(labelPad, r * cellSize + labelPad);
+      ctx.lineTo(canvasW, r * cellSize + labelPad);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = "#9CA0B4";
+    ctx.font = "10px 'JetBrains Mono', monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    for (let c = 1; c <= cols; c++) {
+      ctx.fillText(c, (c - 0.5) * cellSize + labelPad, labelPad / 2);
+    }
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+    for (let r = 1; r <= rows; r++) {
+      ctx.fillText(r, labelPad - 6, (r - 0.5) * cellSize + labelPad);
+    }
+
+    const link = document.createElement("a");
+    link.download = `craftmatrix-${cols}x${rows}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
   if (!gridCreated) {
     return (
       <div
@@ -768,6 +824,34 @@ export default function GridPage({ onBack, initialPattern }) {
 
         {/* Actions */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: "auto" }}>
+          <button
+            type="button"
+            onClick={handleExportPNG}
+            style={{
+              width: "100%",
+              padding: "10px",
+              backgroundColor: AMBER,
+              color: INK,
+              border: "none",
+              borderRadius: 4,
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "0.7rem",
+              fontWeight: 500,
+              letterSpacing: "0.05em",
+              cursor: "pointer",
+              transition: "background-color 0.2s ease, transform 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = "#ffc35e";
+              e.target.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = AMBER;
+              e.target.style.transform = "translateY(0)";
+            }}
+          >
+            Export PNG
+          </button>
           <button
             type="button"
             onClick={handleClearGrid}

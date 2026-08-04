@@ -436,11 +436,15 @@ function hexToHsl(hex) {
   return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
 }
 
-export default function GridPage({ onBack }) {
-  const [gridCreated, setGridCreated] = useState(false);
-  const [cols, setCols] = useState(16);
-  const [rows, setRows] = useState(16);
-  const [grid, setGrid] = useState([]);
+export default function GridPage({ onBack, initialPattern }) {
+  const [gridCreated, setGridCreated] = useState(initialPattern ? true : false);
+  const [cols, setCols] = useState(initialPattern?.cols || 16);
+  const [rows, setRows] = useState(initialPattern?.rows || 16);
+  const [grid, setGrid] = useState(
+    initialPattern
+      ? initialPattern.grid.flat()
+      : []
+  );
   const [selectedColor, setSelectedColor] = useState("#FFB238");
   const [palette, setPalette] = useState(BASIC_COLORS.map((c) => c.hex));
   const [isPainting, setIsPainting] = useState(false);

@@ -6,7 +6,7 @@ import ColorWheel from "./ColorWheel";
 function Sidebar({ cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange }) {
   return (
     <div style={{
-      width: 260, minWidth: 260, height: "100%", overflowY: "auto",
+      width: 300, minWidth: 300, height: "100%", overflowY: "auto",
       backgroundColor: "#1A1D2B", borderRight: `1px solid ${LINE}`,
       padding: "20px 16px", display: "flex", flexDirection: "column", gap: 20,
     }}>

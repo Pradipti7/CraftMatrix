@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from "react";
 import { INK, LINE, PAPER, MUTED, TEAL } from "../theme";
 import { hslToHex, hexToHsl } from "../utils/color";
 
-export default function ColorWheel({ onSelectColor }) {
+export default function ColorWheel({ onSelectColor, onColorChange }) {
   const [hue, setHue] = useState(0);
   const [saturation, setSaturation] = useState(100);
   const [lightness, setLightness] = useState(50);
@@ -33,8 +33,10 @@ export default function ColorWheel({ onSelectColor }) {
   const updateColor = useCallback((newHue, newSat) => {
     setHue(newHue);
     setSaturation(newSat);
-    setHexInput(hslToHex(newHue, newSat, lightness));
-  }, [lightness]);
+    const hex = hslToHex(newHue, newSat, lightness);
+    setHexInput(hex);
+    onColorChange?.(hex);
+  }, [lightness, onColorChange]);
 
   const handlePointerDown = (e) => {
     isDragging.current = true;
@@ -56,7 +58,9 @@ export default function ColorWheel({ onSelectColor }) {
   const handleLightnessChange = (e) => {
     const l = Number(e.target.value);
     setLightness(l);
-    setHexInput(hslToHex(hue, saturation, l));
+    const hex = hslToHex(hue, saturation, l);
+    setHexInput(hex);
+    onColorChange?.(hex);
   };
 
   const handleHexChange = (e) => {

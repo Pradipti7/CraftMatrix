@@ -3,7 +3,7 @@ import { INK, LINE, PAPER, MUTED, AMBER, TEAL, BASIC_COLORS } from "../theme";
 import GridSizeSelector from "../components/GridSizeSelector";
 import ColorWheel from "../components/ColorWheel";
 
-function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor }) {
+function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange }) {
   return (
     <div style={{
       width: 260, minWidth: 260, height: "100vh", overflowY: "auto",
@@ -57,7 +57,7 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
         <span style={{ fontSize: "0.8rem" }}>{showColorWheel ? "−" : "+"}</span>
       </button>
 
-      {showColorWheel && <ColorWheel onSelectColor={onAddToPalette} />}
+      {showColorWheel && <ColorWheel onSelectColor={onAddToPalette} onColorChange={onColorChange} />}
 
       <div style={{ height: 1, backgroundColor: LINE }} />
 
@@ -364,6 +364,7 @@ export default function GridPage({ onBack, initialPattern }) {
         onClearGrid={handleClearGrid}
         onExportPNG={handleExportPNG}
         onSelectColor={setSelectedColor}
+        onColorChange={setSelectedColor}
       />
       <GridCanvas
         cols={cols}

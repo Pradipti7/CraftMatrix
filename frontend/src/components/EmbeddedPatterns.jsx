@@ -3,9 +3,11 @@ import PatternPreview from "./PatternPreview";
 import { INK, LINE, PAPER, MUTED, AMBER, TEAL } from "../theme";
 import { PATTERNS, CATEGORIES } from "../data/patterns";
 
-export default function EmbeddedPatterns({ onSelectPattern }) {
+export default function EmbeddedPatterns({ onSelectPattern, onSeeMore }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const filtered = activeCategory === "All" ? PATTERNS : PATTERNS.filter((p) => p.category === activeCategory);
+  const displayed = filtered.slice(0, 6);
+  const hasMore = filtered.length > 6;
 
   return (
     <div style={{ backgroundColor: INK, padding: "80px 32px 100px", fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -41,7 +43,7 @@ export default function EmbeddedPatterns({ onSelectPattern }) {
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 24 }}>
-          {filtered.map((pattern) => (
+          {displayed.map((pattern) => (
             <div key={pattern.name} className="cm-pat-card">
               <PatternPreview pattern={pattern} cellSize={12} />
 
@@ -61,6 +63,28 @@ export default function EmbeddedPatterns({ onSelectPattern }) {
             </div>
           ))}
         </div>
+
+        {hasMore && (
+          <div style={{ display: "flex", justifyContent: "center", marginTop: 40 }}>
+            <button
+              type="button"
+              onClick={onSeeMore}
+              style={{
+                padding: "12px 32px",
+                backgroundColor: AMBER, color: INK,
+                fontFamily: "'JetBrains Mono', monospace", fontWeight: 500,
+                fontSize: "0.8rem", letterSpacing: "0.1em",
+                border: "none", borderRadius: 4,
+                cursor: "pointer",
+                transition: "background-color 0.2s ease, transform 0.2s ease",
+              }}
+              onMouseEnter={(e) => { e.target.style.backgroundColor = "#ffc35e"; e.target.style.transform = "translateY(-1px)"; }}
+              onMouseLeave={(e) => { e.target.style.backgroundColor = AMBER; e.target.style.transform = "translateY(0)"; }}
+            >
+              See more patterns
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

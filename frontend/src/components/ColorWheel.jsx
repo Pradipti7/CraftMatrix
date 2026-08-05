@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { INK, LINE, PAPER, MUTED, TEAL } from "../theme";
 import { hslToHex, hexToHsl } from "../utils/color";
 
@@ -7,12 +7,56 @@ export default function ColorWheel({ onSelectColor }) {
   const [saturation, setSaturation] = useState(100);
   const [lightness, setLightness] = useState(50);
   const [hexInput, setHexInput] = useState("#FF0000");
+  const wheelRef = useRef(null);
+  const isDragging = useRef(false);
 
-  const handleHueChange = (e) => {
-    const newHue = Number(e.target.value);
+  const currentColor = hslToHex(hue, saturation, lightness);
+
+  const getColorFromPosition = useCallback((clientX, clientY) => {
+    const rect = wheelRef.current.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = clientX - cx;
+    const dy = clientY - cy;
+    const radius = rect.width / 2;
+
+    let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+    if (angle < 0) angle += 360;
+    const newHue = Math.round(angle) % 360;
+
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const newSat = Math.round(Math.min(100, (dist / radius) * 100));
+
+    return { h: newHue, s: newSat };
+  }, []);
+
+  const updateColor = useCallback((newHue, newSat) => {
     setHue(newHue);
-    const hex = hslToHex(newHue, saturation, lightness);
-    setHexInput(hex);
+    setSaturation(newSat);
+    setHexInput(hslToHex(newHue, newSat, lightness));
+  }, [lightness]);
+
+  const handlePointerDown = (e) => {
+    isDragging.current = true;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const { h, s } = getColorFromPosition(e.clientX, e.clientY);
+    updateColor(h, s);
+  };
+
+  const handlePointerMove = (e) => {
+    if (!isDragging.current) return;
+    const { h, s } = getColorFromPosition(e.clientX, e.clientY);
+    updateColor(h, s);
+  };
+
+  const handlePointerUp = () => {
+    isDragging.current = false;
+  };
+
+  const handleLightnessChange = (e) => {
+    const l = Number(e.target.value);
+    setLightness(l);
+    setHexInput(hslToHex(hue, saturation, l));
   };
 
   const handleHexChange = (e) => {
@@ -32,7 +76,11 @@ export default function ColorWheel({ onSelectColor }) {
     }
   };
 
-  const currentColor = hslToHex(hue, saturation, lightness);
+  const wheelSize = 140;
+  const indicatorAngle = (hue - 90) * (Math.PI / 180);
+  const indicatorDist = (saturation / 100) * (wheelSize / 2 - 8);
+  const indicatorX = Math.cos(indicatorAngle) * indicatorDist;
+  const indicatorY = Math.sin(indicatorAngle) * indicatorDist;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -40,27 +88,74 @@ export default function ColorWheel({ onSelectColor }) {
         Color Wheel
       </span>
 
-      <div style={{ position: "relative" }}>
-        <div style={{
-          width: "100%", height: 16, borderRadius: 4,
-          background: "linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)",
-        }} />
-        <input
-          type="range"
-          min={0}
-          max={360}
-          value={hue}
-          onChange={handleHueChange}
-          style={{ position: "absolute", top: 0, left: 0, width: "100%", height: 16, opacity: 0, cursor: "pointer" }}
-        />
-        <div style={{
-          position: "absolute", top: -4,
-          left: `${(hue / 360) * 100}%`, transform: "translateX(-50%)",
-          width: 12, height: 24, backgroundColor: currentColor,
-          border: `2px solid ${PAPER}`, borderRadius: 2, pointerEvents: "none",
-        }} />
+      {/* Circular wheel */}
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <div
+          ref={wheelRef}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          style={{
+            position: "relative",
+            width: wheelSize,
+            height: wheelSize,
+            borderRadius: "50%",
+            background: "conic-gradient(from 0deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)",
+            cursor: "crosshair",
+            touchAction: "none",
+          }}
+        >
+          {/* Radial white overlay for saturation */}
+          <div style={{
+            position: "absolute", inset: 0, borderRadius: "50%",
+            background: "radial-gradient(circle, #ffffff 0%, transparent 70%)",
+            opacity: 0.3,
+            pointerEvents: "none",
+          }} />
+
+          {/* Draggable indicator */}
+          <div style={{
+            position: "absolute",
+            top: "50%", left: "50%",
+            width: 16, height: 16,
+            borderRadius: "50%",
+            backgroundColor: currentColor,
+            border: `2px solid ${PAPER}`,
+            boxShadow: "0 1px 4px rgba(0,0,0,0.4)",
+            transform: `translate(calc(-50% + ${indicatorX}px), calc(-50% + ${indicatorY}px))`,
+            pointerEvents: "none",
+          }} />
+        </div>
       </div>
 
+      {/* Lightness slider */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.65rem", minWidth: 14 }}>L</span>
+        <div style={{ position: "relative", flex: 1 }}>
+          <div style={{
+            width: "100%", height: 10, borderRadius: 5,
+            background: `linear-gradient(to right, #000000, ${hslToHex(hue, saturation, 50)}, #ffffff)`,
+          }} />
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={lightness}
+            onChange={handleLightnessChange}
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: 10, opacity: 0, cursor: "pointer" }}
+          />
+          <div style={{
+            position: "absolute", top: -3,
+            left: `${lightness}%`, transform: "translateX(-50%)",
+            width: 8, height: 16, borderRadius: 2,
+            backgroundColor: currentColor, border: `1px solid ${PAPER}`,
+            pointerEvents: "none",
+          }} />
+        </div>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.65rem", minWidth: 28, textAlign: "right" }}>{lightness}%</span>
+      </div>
+
+      {/* Preview + Hex + Add */}
       <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
         <div style={{ width: 48, height: 48, borderRadius: 4, backgroundColor: currentColor, border: `1px solid ${LINE}` }} />
         <input

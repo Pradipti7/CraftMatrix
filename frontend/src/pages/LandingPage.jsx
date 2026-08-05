@@ -1,7 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import EmbeddedPatterns from "../components/EmbeddedPatterns";
-import EmbeddedGrid from "../components/EmbeddedGrid";
 import { INK, LINE, PAPER, MUTED, AMBER, TEAL } from "../theme";
 
 const WORDMARK = "CraftMatrix";
@@ -72,9 +71,7 @@ export default function CraftMatrixLanding({ onStartCreating, onPatterns, onHome
   const [ready, setReady] = useState(false);
   const [cols, setCols] = useState(24);
   const [rows, setRows] = useState(14);
-  const [gridPattern, setGridPattern] = useState(null);
   const patternsRef = useRef(null);
-  const gridRef = useRef(null);
 
   useEffect(() => {
     const t = setTimeout(() => setReady(true), 80);
@@ -85,18 +82,8 @@ export default function CraftMatrixLanding({ onStartCreating, onPatterns, onHome
     patternsRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const scrollToGrid = () => {
-    gridRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   const handleSelectPattern = (pattern) => {
-    setGridPattern(pattern);
-    setTimeout(() => scrollToGrid(), 100);
-  };
-
-  const handleStartCreating = () => {
-    setGridPattern(null);
-    setTimeout(() => scrollToGrid(), 100);
+    onSelectPattern(pattern);
   };
 
   return (
@@ -147,7 +134,7 @@ export default function CraftMatrixLanding({ onStartCreating, onPatterns, onHome
               <button
                 type="button"
                 className="cm-cta"
-                onClick={handleStartCreating}
+                onClick={onStartCreating}
                 style={{
                   position: "relative", padding: "16px 36px",
                   textTransform: "uppercase", backgroundColor: AMBER, color: INK,
@@ -211,11 +198,6 @@ export default function CraftMatrixLanding({ onStartCreating, onPatterns, onHome
       {/* ── Patterns Section ──────────────────────────────────────── */}
       <div ref={patternsRef}>
         <EmbeddedPatterns onSelectPattern={handleSelectPattern} />
-      </div>
-
-      {/* ── Grid Editor Section ───────────────────────────────────── */}
-      <div ref={gridRef}>
-        <EmbeddedGrid initialPattern={gridPattern} onClearPattern={() => setGridPattern(null)} />
       </div>
     </div>
   );

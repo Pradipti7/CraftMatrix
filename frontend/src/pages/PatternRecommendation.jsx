@@ -11,6 +11,10 @@ export default function PatternRecommendation({ onBack, onSelectPattern, onCreat
   const dragOffset = useRef({ x: 0, y: 0 });
   const didDrag = useRef(false);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handlePointerDown = useCallback((e) => {
     e.preventDefault();
     didDrag.current = false;

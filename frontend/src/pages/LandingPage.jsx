@@ -197,7 +197,7 @@ export default function CraftMatrixLanding({ onStartCreating, onPatterns, onHome
 
       {/* ── Patterns Section ──────────────────────────────────────── */}
       <div ref={patternsRef}>
-        <EmbeddedPatterns onSelectPattern={handleSelectPattern} />
+        <EmbeddedPatterns onSelectPattern={handleSelectPattern} onSeeMore={onPatterns} />
       </div>
     </div>
   );

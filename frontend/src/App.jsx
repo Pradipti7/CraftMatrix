@@ -36,6 +36,7 @@ function App() {
       onStartCreating={() => setPage('grid')}
       onPatterns={() => setPage('patterns')}
       onHome={() => setPage('landing')}
+      onSelectPattern={handleSelectPattern}
     />
   )
 }

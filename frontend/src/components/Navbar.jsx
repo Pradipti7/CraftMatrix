@@ -1,4 +1,4 @@
-import { INK, LINE, PAPER, MUTED, AMBER, TEAL } from "../theme";
+import { INK, LINE, PAPER, MUTED, AMBER } from "../theme";
 
 export default function Navbar({ onStartCreating, onPatterns, onHome }) {
   return (

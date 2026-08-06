@@ -4,7 +4,7 @@ import GridSizeSelector from "../components/GridSizeSelector";
 import ColorWheel from "../components/ColorWheel";
 import useUndoRedo from "../hooks/useUndoRedo";
 
-function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo }) {
+function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool }) {
   return (
     <div style={{
       width: 300, minWidth: 300, height: "100vh", overflowY: "auto",
@@ -67,15 +67,81 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
         <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
           Palette ({palette.length})
         </span>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          <div
-            className={`palette-color ${selectedColor === null ? "active" : ""}`}
-            style={{ backgroundColor: "#F3F4F6", border: `2px dashed ${LINE}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.8rem", color: MUTED }}
-            onClick={() => onSelectColor(null)}
-            title="Eraser"
+
+        {/* Tool Selector */}
+        <div style={{ display: "flex", gap: 6 }}>
+          <button
+            type="button"
+            onClick={() => onSelectTool("paint")}
+            title="Paint (P)"
+            style={{
+              width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: activeTool === "paint" ? "#262A3A" : "transparent",
+              border: `1px solid ${activeTool === "paint" ? AMBER : LINE}`,
+              borderRadius: 4, cursor: "pointer", transition: "border-color 0.2s ease, background-color 0.2s ease",
+            }}
           >
-            &#10005;
-          </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={activeTool === "paint" ? AMBER : MUTED} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 19l7-7 3 3-7 7-3-3z" />
+              <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+              <path d="M2 2l7.586 7.586" />
+              <circle cx="11" cy="11" r="2" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => onSelectTool("eyedropper")}
+            title="Eyedropper (I)"
+            style={{
+              width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: activeTool === "eyedropper" ? "#262A3A" : "transparent",
+              border: `1px solid ${activeTool === "eyedropper" ? AMBER : LINE}`,
+              borderRadius: 4, cursor: "pointer", transition: "border-color 0.2s ease, background-color 0.2s ease",
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={activeTool === "eyedropper" ? AMBER : MUTED} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 22l1-1h3l9-9" />
+              <path d="M3 21l9-9" />
+              <circle cx="17.5" cy="6.5" r="3.5" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => onSelectTool("fill")}
+            title="Flood Fill (F)"
+            style={{
+              width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: activeTool === "fill" ? "#262A3A" : "transparent",
+              border: `1px solid ${activeTool === "fill" ? AMBER : LINE}`,
+              borderRadius: 4, cursor: "pointer", transition: "border-color 0.2s ease, background-color 0.2s ease",
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={activeTool === "fill" ? AMBER : MUTED} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2.5 2.5l7.5 7.5" />
+              <path d="M10 2L2 10l10 10 8-8-10-10z" />
+              <path d="M19 11l3 3-8 8-3-3" />
+              <path d="M22 14l-3 3" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => onSelectTool("eraser")}
+            title="Eraser (E)"
+            style={{
+              width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: activeTool === "eraser" ? "#262A3A" : "transparent",
+              border: `1px solid ${activeTool === "eraser" ? AMBER : LINE}`,
+              borderRadius: 4, cursor: "pointer", transition: "border-color 0.2s ease, background-color 0.2s ease",
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={activeTool === "eraser" ? AMBER : MUTED} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 20H7L3 16l9-9 8 8-4 4" />
+              <path d="M6.5 13.5l5-5" />
+            </svg>
+          </button>
+        </div>
+
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {palette.map((color, i) => (
             <div
               key={`${color}-${i}`}
@@ -241,6 +307,7 @@ export default function GridPage({ onBack, initialPattern }) {
   const [palette, setPalette] = useState(BASIC_COLORS.map((c) => c.hex));
   const [isPainting, setIsPainting] = useState(false);
   const [showColorWheel, setShowColorWheel] = useState(true);
+  const [activeTool, setActiveTool] = useState("paint");
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -255,6 +322,14 @@ export default function GridPage({ onBack, initialPattern }) {
       } else if (isMod && e.key === "y") {
         e.preventDefault();
         redo();
+      } else if (e.key === "f" && !isMod) {
+        setActiveTool("fill");
+      } else if (e.key === "p" && !isMod) {
+        setActiveTool("paint");
+      } else if (e.key === "i" && !isMod) {
+        setActiveTool("eyedropper");
+      } else if (e.key === "e" && !isMod) {
+        setActiveTool("eraser");
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -279,14 +354,79 @@ export default function GridPage({ onBack, initialPattern }) {
     [selectedColor, setGrid]
   );
 
+  const handleFloodFill = useCallback(
+    (index) => {
+      setGrid((prev) => {
+        const targetColor = prev[index];
+        if (targetColor === selectedColor) return prev;
+        const next = [...prev];
+        const queue = [index];
+        const visited = new Set([index]);
+        while (queue.length > 0) {
+          const current = queue.shift();
+          if (next[current] !== targetColor) continue;
+          next[current] = selectedColor;
+          const col = current % cols;
+          const row = Math.floor(current / cols);
+          const neighbors = [];
+          if (col > 0) neighbors.push(current - 1);
+          if (col < cols - 1) neighbors.push(current + 1);
+          if (row > 0) neighbors.push(current - cols);
+          if (row < rows - 1) neighbors.push(current + cols);
+          for (const n of neighbors) {
+            if (!visited.has(n) && next[n] === targetColor) {
+              visited.add(n);
+              queue.push(n);
+            }
+          }
+        }
+        return next;
+      });
+    },
+    [selectedColor, setGrid, cols, rows]
+  );
+
   const handleMouseDown = (index) => {
+    if (activeTool === "fill") {
+      beginStroke();
+      handleFloodFill(index);
+      endStroke();
+      return;
+    }
+    if (activeTool === "eyedropper") {
+      const pickedColor = grid[index];
+      if (pickedColor) {
+        setSelectedColor(pickedColor);
+        if (!palette.includes(pickedColor)) {
+          setPalette((prev) => [...prev, pickedColor]);
+        }
+      }
+      return;
+    }
+    if (activeTool === "eraser") {
+      setIsPainting(true);
+      beginStroke();
+      setGrid((prev) => {
+        const next = [...prev];
+        next[index] = null;
+        return next;
+      });
+      return;
+    }
     setIsPainting(true);
     beginStroke();
     handlePaint(index);
   };
 
   const handleMouseEnter = (index) => {
-    if (isPainting) {
+    if (!isPainting) return;
+    if (activeTool === "eraser") {
+      setGrid((prev) => {
+        const next = [...prev];
+        next[index] = null;
+        return next;
+      });
+    } else {
       handlePaint(index);
     }
   };
@@ -433,6 +573,8 @@ export default function GridPage({ onBack, initialPattern }) {
         canRedo={canRedo}
         onUndo={undo}
         onRedo={redo}
+        activeTool={activeTool}
+        onSelectTool={setActiveTool}
       />
       <GridCanvas
         cols={cols}

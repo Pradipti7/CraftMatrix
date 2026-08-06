@@ -1,9 +1,10 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { INK, LINE, PAPER, MUTED, AMBER, TEAL, BASIC_COLORS } from "../theme";
 import GridSizeSelector from "../components/GridSizeSelector";
 import ColorWheel from "../components/ColorWheel";
+import useUndoRedo from "../hooks/useUndoRedo";
 
-function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange }) {
+function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo }) {
   return (
     <div style={{
       width: 300, minWidth: 300, height: "100vh", overflowY: "auto",
@@ -85,6 +86,46 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
             />
           ))}
         </div>
+      </div>
+
+      <div style={{ height: 1, backgroundColor: LINE }} />
+
+      {/* Undo / Redo */}
+      <div style={{ display: "flex", gap: 8 }}>
+        <button
+          type="button"
+          onClick={onUndo}
+          disabled={!canUndo}
+          style={{
+            flex: 1, padding: "8px", backgroundColor: "transparent",
+            color: canUndo ? PAPER : "#3A3F55", border: `1px solid ${canUndo ? LINE : "#262A3A"}`,
+            borderRadius: 4, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.7rem",
+            letterSpacing: "0.05em", cursor: canUndo ? "pointer" : "not-allowed",
+            transition: "border-color 0.2s ease, color 0.2s ease",
+          }}
+          onMouseEnter={(e) => { if (canUndo) { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; } }}
+          onMouseLeave={(e) => { e.target.style.borderColor = canUndo ? LINE : "#262A3A"; e.target.style.color = canUndo ? PAPER : "#3A3F55"; }}
+          title="Undo (Ctrl+Z)"
+        >
+          &#8630; Undo
+        </button>
+        <button
+          type="button"
+          onClick={onRedo}
+          disabled={!canRedo}
+          style={{
+            flex: 1, padding: "8px", backgroundColor: "transparent",
+            color: canRedo ? PAPER : "#3A3F55", border: `1px solid ${canRedo ? LINE : "#262A3A"}`,
+            borderRadius: 4, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.7rem",
+            letterSpacing: "0.05em", cursor: canRedo ? "pointer" : "not-allowed",
+            transition: "border-color 0.2s ease, color 0.2s ease",
+          }}
+          onMouseEnter={(e) => { if (canRedo) { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; } }}
+          onMouseLeave={(e) => { e.target.style.borderColor = canRedo ? LINE : "#262A3A"; e.target.style.color = canRedo ? PAPER : "#3A3F55"; }}
+          title="Redo (Ctrl+Shift+Z)"
+        >
+          &#8631; Redo
+        </button>
       </div>
 
       <div style={{ height: 1, backgroundColor: LINE }} />
@@ -194,16 +235,36 @@ export default function GridPage({ onBack, initialPattern }) {
   const [gridCreated, setGridCreated] = useState(initialPattern ? true : false);
   const [cols, setCols] = useState(initialPattern?.cols || 16);
   const [rows, setRows] = useState(initialPattern?.rows || 16);
-  const [grid, setGrid] = useState(initialPattern ? initialPattern.grid.flat() : []);
+  const gridHook = useUndoRedo(initialPattern ? initialPattern.grid.flat() : []);
+  const { present: grid, set: setGrid, beginStroke, endStroke, undo, redo, reset, canUndo, canRedo } = gridHook;
   const [selectedColor, setSelectedColor] = useState("#FFB238");
   const [palette, setPalette] = useState(BASIC_COLORS.map((c) => c.hex));
   const [isPainting, setIsPainting] = useState(false);
   const [showColorWheel, setShowColorWheel] = useState(true);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!gridCreated) return;
+      const isMod = e.metaKey || e.ctrlKey;
+      if (isMod && e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      } else if (isMod && e.key === "z" && e.shiftKey) {
+        e.preventDefault();
+        redo();
+      } else if (isMod && e.key === "y") {
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [gridCreated, undo, redo]);
+
   const handleConfirmGrid = (c, r) => {
     setCols(c);
     setRows(r);
-    setGrid(Array.from({ length: c * r }, () => null));
+    reset(Array.from({ length: c * r }, () => null));
     setGridCreated(true);
   };
 
@@ -215,11 +276,12 @@ export default function GridPage({ onBack, initialPattern }) {
         return next;
       });
     },
-    [selectedColor]
+    [selectedColor, setGrid]
   );
 
   const handleMouseDown = (index) => {
     setIsPainting(true);
+    beginStroke();
     handlePaint(index);
   };
 
@@ -230,7 +292,10 @@ export default function GridPage({ onBack, initialPattern }) {
   };
 
   const handleMouseUp = () => {
-    setIsPainting(false);
+    if (isPainting) {
+      setIsPainting(false);
+      endStroke();
+    }
   };
 
   const handleAddToPalette = (color) => {
@@ -241,7 +306,7 @@ export default function GridPage({ onBack, initialPattern }) {
   };
 
   const handleClearGrid = () => {
-    setGrid(Array.from({ length: cols * rows }, () => null));
+    reset(Array.from({ length: cols * rows }, () => null));
   };
 
   const handleExportPNG = () => {
@@ -364,6 +429,10 @@ export default function GridPage({ onBack, initialPattern }) {
         onExportPNG={handleExportPNG}
         onSelectColor={setSelectedColor}
         onColorChange={setSelectedColor}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        onUndo={undo}
+        onRedo={redo}
       />
       <GridCanvas
         cols={cols}

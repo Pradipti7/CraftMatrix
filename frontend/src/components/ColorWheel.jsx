@@ -88,40 +88,9 @@ export default function ColorWheel({ onSelectColor, onColorChange }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 8 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+      <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
           Color Wheel
         </span>
-        {typeof window !== "undefined" && "EyeDropper" in window && (
-          <button
-            type="button"
-            onClick={async () => {
-              try {
-                const eyeDropper = new window.EyeDropper();
-                const result = await eyeDropper.open();
-                const { h, s, l } = hexToHsl(result.sRGBHex);
-                setHue(h);
-                setSaturation(s);
-                setLightness(l);
-                setHexInput(result.sRGBHex);
-                onColorChange?.(result.sRGBHex);
-              } catch {}
-            }}
-            title="Pick color from screen"
-            style={{
-              background: "none", border: "none", padding: 0,
-              cursor: "pointer", display: "flex", alignItems: "center",
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={MUTED} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M2 22l1-1h3l9-9" />
-              <path d="M3 21v-3l9-9" />
-              <path d="M14.5 5.5l4-4a1.4 1.4 0 0 1 2 2l-4 4" />
-              <path d="M12 8l4 4" />
-            </svg>
-          </button>
-        )}
-      </div>
 
       {/* Circular wheel */}
       <div style={{ display: "flex", justifyContent: "center" }}>

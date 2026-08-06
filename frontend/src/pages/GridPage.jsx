@@ -4,7 +4,7 @@ import GridSizeSelector from "../components/GridSizeSelector";
 import ColorWheel from "../components/ColorWheel";
 import useUndoRedo from "../hooks/useUndoRedo";
 
-function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool }) {
+function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash }) {
   return (
     <div style={{
       width: 300, minWidth: 300, height: "100vh", overflowY: "auto",
@@ -34,7 +34,16 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
 
       {/* Selected Color Preview */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <div style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: selectedColor, border: `2px solid ${LINE}` }} />
+        <div 
+          id="color-preview"
+          style={{ 
+            width: 40, height: 40, borderRadius: 4, backgroundColor: selectedColor, 
+            border: `2px solid ${LINE}`,
+            transition: "transform 0.15s ease, box-shadow 0.15s ease",
+            transform: eyedropperFlash ? "scale(1.2)" : "scale(1)",
+            boxShadow: eyedropperFlash ? `0 0 12px ${selectedColor}` : "none",
+          }} 
+        />
         <div>
           <div style={{ fontFamily: "'JetBrains Mono', monospace", color: PAPER, fontSize: "0.8rem" }}>Selected</div>
           <div style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.7rem" }}>{selectedColor}</div>
@@ -90,7 +99,7 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
           </button>
           <button
             type="button"
-            onClick={() => onSelectTool("eyedropper")}
+            onClick={() => onSelectToolWithHistory("eyedropper")}
             title="Eyedropper (I)"
             style={{
               width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
@@ -103,6 +112,22 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
               <path d="M2 22l1-1h3l9-9" />
               <path d="M3 21l9-9" />
               <circle cx="17.5" cy="6.5" r="3.5" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => onSelectTool("eraser")}
+            title="Eraser (E)"
+            style={{
+              width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: activeTool === "eraser" ? "#262A3A" : "transparent",
+              border: `1px solid ${activeTool === "eraser" ? AMBER : LINE}`,
+              borderRadius: 4, cursor: "pointer", transition: "border-color 0.2s ease, background-color 0.2s ease",
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={activeTool === "eraser" ? AMBER : MUTED} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 20H7L3 16l9-9 8 8-4 4" />
+              <path d="M6.5 13.5l5-5" />
             </svg>
           </button>
           <button
@@ -121,22 +146,6 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
               <path d="M10 2L2 10l10 10 8-8-10-10z" />
               <path d="M19 11l3 3-8 8-3-3" />
               <path d="M22 14l-3 3" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={() => onSelectTool("eraser")}
-            title="Eraser (E)"
-            style={{
-              width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
-              backgroundColor: activeTool === "eraser" ? "#262A3A" : "transparent",
-              border: `1px solid ${activeTool === "eraser" ? AMBER : LINE}`,
-              borderRadius: 4, cursor: "pointer", transition: "border-color 0.2s ease, background-color 0.2s ease",
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={activeTool === "eraser" ? AMBER : MUTED} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 20H7L3 16l9-9 8 8-4 4" />
-              <path d="M6.5 13.5l5-5" />
             </svg>
           </button>
         </div>
@@ -308,6 +317,8 @@ export default function GridPage({ onBack, initialPattern }) {
   const [isPainting, setIsPainting] = useState(false);
   const [showColorWheel, setShowColorWheel] = useState(true);
   const [activeTool, setActiveTool] = useState("paint");
+  const [previousTool, setPreviousTool] = useState("paint");
+  const [eyedropperFlash, setEyedropperFlash] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -327,6 +338,7 @@ export default function GridPage({ onBack, initialPattern }) {
       } else if (e.key === "p" && !isMod) {
         setActiveTool("paint");
       } else if (e.key === "i" && !isMod) {
+        setPreviousTool(activeTool);
         setActiveTool("eyedropper");
       } else if (e.key === "e" && !isMod) {
         setActiveTool("eraser");
@@ -400,7 +412,10 @@ export default function GridPage({ onBack, initialPattern }) {
         if (!palette.includes(pickedColor)) {
           setPalette((prev) => [...prev, pickedColor]);
         }
+        setEyedropperFlash(true);
+        setTimeout(() => setEyedropperFlash(false), 300);
       }
+      setActiveTool(previousTool);
       return;
     }
     if (activeTool === "eraser") {
@@ -443,6 +458,13 @@ export default function GridPage({ onBack, initialPattern }) {
       setPalette((prev) => [...prev, color]);
     }
     setSelectedColor(color);
+  };
+
+  const handleSelectToolWithHistory = (tool) => {
+    if (tool === "eyedropper") {
+      setPreviousTool(activeTool);
+    }
+    setActiveTool(tool);
   };
 
   const handleClearGrid = () => {
@@ -575,6 +597,8 @@ export default function GridPage({ onBack, initialPattern }) {
         onRedo={redo}
         activeTool={activeTool}
         onSelectTool={setActiveTool}
+        onSelectToolWithHistory={handleSelectToolWithHistory}
+        eyedropperFlash={eyedropperFlash}
       />
       <GridCanvas
         cols={cols}

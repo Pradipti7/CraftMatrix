@@ -149,27 +149,6 @@ export default function CraftMatrixLanding({ onStartCreating, onPatterns, onHome
                 Start creating
               </button>
 
-              {onUploadPhoto && (
-                <button
-                  type="button"
-                  onClick={onUploadPhoto}
-                  className="cm-sub"
-                  style={{
-                    padding: "16px 36px",
-                    backgroundColor: "transparent", color: MUTED,
-                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 500,
-                    fontSize: "0.8rem", letterSpacing: "0.15em",
-                    border: `1px solid ${LINE}`, borderRadius: 4,
-                    cursor: "pointer", animationDelay: "1.0s",
-                    transition: "color 0.2s ease, border-color 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => { e.target.style.color = PAPER; e.target.style.borderColor = MUTED; }}
-                  onMouseLeave={(e) => { e.target.style.color = MUTED; e.target.style.borderColor = LINE; }}
-                >
-                  Upload Photo
-                </button>
-              )}
-
               <button
                 type="button"
                 onClick={scrollToPatterns}

@@ -10,7 +10,7 @@ export default function PatternPreview({ pattern, cellSize = 14 }) {
       gridTemplateColumns: `repeat(${pattern.cols}, ${cellSize}px)`,
       gridTemplateRows: `repeat(${pattern.rows}, ${cellSize}px)`,
       border: `1px solid ${LINE}`, borderRadius: 4, overflow: "hidden",
-      width: w, height: h, flexShrink: 0,
+      width: w, height: h, flexShrink: 1,
     }}>
       {pattern.grid.flat().map((color, i) => (
         <div key={i} style={{

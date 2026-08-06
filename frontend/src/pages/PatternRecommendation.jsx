@@ -4,7 +4,7 @@ import PatternPreview from "../components/PatternPreview";
 import { INK, LINE, PAPER, MUTED, AMBER, TEAL } from "../theme";
 import { PATTERNS, CATEGORIES } from "../data/patterns";
 
-export default function PatternRecommendation({ onBack, onSelectPattern, onCreatePattern }) {
+export default function PatternRecommendation({ onBack, onSelectPattern, onCreatePattern, onUploadPhoto }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [fabPos, setFabPos] = useState({ x: window.innerWidth - 100, y: window.innerHeight * 0.7 });
   const [isDragging, setIsDragging] = useState(false);
@@ -54,7 +54,7 @@ export default function PatternRecommendation({ onBack, onSelectPattern, onCreat
   return (
     <div style={{ position: "relative", width: "100%", minHeight: "100vh", backgroundColor: INK, fontFamily: "'Inter', system-ui, sans-serif" }}>
       <div style={{ position: "relative", zIndex: 200 }}>
-        <Navbar onStartCreating={onCreatePattern} onPatterns={() => {}} onHome={onBack} />
+        <Navbar onStartCreating={onCreatePattern} onPatterns={() => {}} onHome={onBack} onUploadPhoto={onUploadPhoto} />
       </div>
 
       {/* Header */}

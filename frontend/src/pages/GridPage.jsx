@@ -124,7 +124,6 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
     </div>
   );
 }
-
 function GridCanvas({ cols, rows, grid, onPaintStart, onPaintEnter }) {
   const cellSize = Math.min(28, (window.innerWidth - 340) / cols);
   const cellSizeH = Math.min(28, (window.innerHeight - 80) / rows);

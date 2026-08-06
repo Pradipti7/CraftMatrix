@@ -67,7 +67,7 @@ function GridControls({ cols, rows, onColsChange, onRowsChange }) {
   );
 }
 
-export default function CraftMatrixLanding({ onStartCreating, onPatterns, onHome, onSelectPattern }) {
+export default function CraftMatrixLanding({ onStartCreating, onPatterns, onHome, onSelectPattern, onUploadPhoto }) {
   const [ready, setReady] = useState(false);
   const [cols, setCols] = useState(24);
   const [rows, setRows] = useState(14);
@@ -92,6 +92,7 @@ export default function CraftMatrixLanding({ onStartCreating, onPatterns, onHome
         onStartCreating={onStartCreating}
         onPatterns={onPatterns}
         onHome={onHome}
+        onUploadPhoto={onUploadPhoto}
       />
 
       {/* ── Hero Section ──────────────────────────────────────────── */}
@@ -147,6 +148,27 @@ export default function CraftMatrixLanding({ onStartCreating, onPatterns, onHome
                 <span className="cm-corner" style={{ position: "absolute", bottom: -4, right: -4, width: 8, height: 8, borderBottom: `2px solid ${AMBER}`, borderRight: `2px solid ${AMBER}` }} />
                 Start creating
               </button>
+
+              {onUploadPhoto && (
+                <button
+                  type="button"
+                  onClick={onUploadPhoto}
+                  className="cm-sub"
+                  style={{
+                    padding: "16px 36px",
+                    backgroundColor: "transparent", color: MUTED,
+                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 500,
+                    fontSize: "0.8rem", letterSpacing: "0.15em",
+                    border: `1px solid ${LINE}`, borderRadius: 4,
+                    cursor: "pointer", animationDelay: "1.0s",
+                    transition: "color 0.2s ease, border-color 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => { e.target.style.color = PAPER; e.target.style.borderColor = MUTED; }}
+                  onMouseLeave={(e) => { e.target.style.color = MUTED; e.target.style.borderColor = LINE; }}
+                >
+                  Upload Photo
+                </button>
+              )}
 
               <button
                 type="button"

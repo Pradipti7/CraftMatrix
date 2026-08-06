@@ -1,6 +1,6 @@
 import { INK, LINE, PAPER, MUTED, AMBER } from "../theme";
 
-export default function Navbar({ onStartCreating, onPatterns, onHome }) {
+export default function Navbar({ onStartCreating, onPatterns, onHome, onUploadPhoto }) {
   return (
     <nav className="cm-nav" style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
@@ -43,6 +43,21 @@ export default function Navbar({ onStartCreating, onPatterns, onHome }) {
         >
           Patterns
         </button>
+        {onUploadPhoto && (
+          <button
+            type="button"
+            className="cm-nav-link"
+            onClick={onUploadPhoto}
+            style={{
+              fontFamily: "'JetBrains Mono', monospace", fontSize: "0.75rem",
+              color: MUTED, letterSpacing: "0.05em", cursor: "pointer",
+              background: "none", border: "none", padding: "8px 12px", borderRadius: 4,
+              transition: "color 0.2s ease, background-color 0.2s ease",
+            }}
+          >
+            Upload Photo
+          </button>
+        )}
         <button
           type="button"
           className="cm-nav-btn cm-nav-btn-primary"

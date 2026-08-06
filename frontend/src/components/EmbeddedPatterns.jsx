@@ -10,7 +10,7 @@ export default function EmbeddedPatterns({ onSelectPattern, onSeeMore }) {
   const hasMore = filtered.length > 6;
 
   return (
-    <div style={{ backgroundColor: INK, padding: "80px 32px 100px", fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div style={{ backgroundColor: INK, padding: "80px 32px 100px", fontFamily: "'Inter', system-ui, sans-serif", width: "100%" }}>
       <div style={{ maxWidth: 960, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>

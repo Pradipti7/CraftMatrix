@@ -13,12 +13,14 @@
 body {
   margin: 0;
   font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
 }
 
 #root {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 /* ── Animations ───────────────────────────────────── */
@@ -157,7 +159,7 @@ body {
 .cm-pat-card {
   background-color: #1A1D2B;
   border: 1px solid var(--line);
-  border-radius: 6;
+  border-radius: 6px;
   padding: 20px;
   display: flex;
   flex-direction: column;

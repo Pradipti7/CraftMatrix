@@ -88,10 +88,6 @@ export default function ColorWheel({ onSelectColor, onColorChange }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 8 }}>
-      <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-          Color Wheel
-        </span>
-
       {/* Circular wheel */}
       <div style={{ display: "flex", justifyContent: "center" }}>
         <div

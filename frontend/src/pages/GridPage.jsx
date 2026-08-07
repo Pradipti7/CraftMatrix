@@ -4,7 +4,7 @@ import GridSizeSelector from "../components/GridSizeSelector";
 import ColorWheel from "../components/ColorWheel";
 import useUndoRedo from "../hooks/useUndoRedo";
 
-function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash }) {
+function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash, onPickScreenColor }) {
   return (
     <div style={{
       width: 300, minWidth: 300, height: "100vh", overflowY: "auto",
@@ -99,7 +99,7 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
           </button>
           <button
             type="button"
-            onClick={() => onSelectToolWithHistory("eyedropper")}
+            onClick={onPickScreenColor}
             title="Eyedropper (I)"
             style={{
               width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
@@ -317,7 +317,6 @@ export default function GridPage({ onBack, initialPattern }) {
   const [isPainting, setIsPainting] = useState(false);
   const [showColorWheel, setShowColorWheel] = useState(true);
   const [activeTool, setActiveTool] = useState("paint");
-  const [previousTool, setPreviousTool] = useState("paint");
   const [eyedropperFlash, setEyedropperFlash] = useState(false);
 
   useEffect(() => {
@@ -338,8 +337,7 @@ export default function GridPage({ onBack, initialPattern }) {
       } else if (e.key === "p" && !isMod) {
         setActiveTool("paint");
       } else if (e.key === "i" && !isMod) {
-        setPreviousTool(activeTool);
-        setActiveTool("eyedropper");
+        handlePickScreenColor();
       } else if (e.key === "e" && !isMod) {
         setActiveTool("eraser");
       }
@@ -398,6 +396,26 @@ export default function GridPage({ onBack, initialPattern }) {
     [selectedColor, setGrid, cols, rows]
   );
 
+  const handlePickScreenColor = useCallback(async () => {
+    if (typeof window.EyeDropper === "undefined") {
+      alert("EyeDropper API is not supported in this browser.");
+      return;
+    }
+    try {
+      const eyeDropper = new window.EyeDropper();
+      const result = await eyeDropper.open();
+      const hex = result.sRGBHex.toUpperCase();
+      setSelectedColor(hex);
+      if (!palette.includes(hex)) {
+        setPalette((prev) => [...prev, hex]);
+      }
+      setEyedropperFlash(true);
+      setTimeout(() => setEyedropperFlash(false), 300);
+    } catch {
+      // user cancelled
+    }
+  }, [palette]);
+
   const handleMouseDown = (index) => {
     if (activeTool === "fill") {
       beginStroke();
@@ -406,16 +424,7 @@ export default function GridPage({ onBack, initialPattern }) {
       return;
     }
     if (activeTool === "eyedropper") {
-      const pickedColor = grid[index];
-      if (pickedColor) {
-        setSelectedColor(pickedColor);
-        if (!palette.includes(pickedColor)) {
-          setPalette((prev) => [...prev, pickedColor]);
-        }
-        setEyedropperFlash(true);
-        setTimeout(() => setEyedropperFlash(false), 300);
-      }
-      setActiveTool(previousTool);
+      handlePickScreenColor();
       return;
     }
     if (activeTool === "eraser") {
@@ -461,9 +470,6 @@ export default function GridPage({ onBack, initialPattern }) {
   };
 
   const handleSelectToolWithHistory = (tool) => {
-    if (tool === "eyedropper") {
-      setPreviousTool(activeTool);
-    }
     setActiveTool(tool);
   };
 
@@ -599,6 +605,7 @@ export default function GridPage({ onBack, initialPattern }) {
         onSelectTool={setActiveTool}
         onSelectToolWithHistory={handleSelectToolWithHistory}
         eyedropperFlash={eyedropperFlash}
+        onPickScreenColor={handlePickScreenColor}
       />
       <GridCanvas
         cols={cols}

@@ -247,10 +247,10 @@ function GridCanvas({ cols, rows, grid, onPaintStart, onPaintEnter }) {
   const gridH = rows * cellSizeH;
 
   return (
-    <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 32, overflow: "auto" }}>
-      <div style={{ position: "relative" }}>
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 32, overflow: "auto" }}>
+      <div style={{ position: "relative", backgroundColor: "#FFFFFF", padding: "20px 24px 24px 20px", borderRadius: 8 }}>
         {/* Top column labels */}
-        <div style={{ position: "absolute", top: -14, left: 0, width: gridW, height: 14 }}>
+        <div style={{ position: "absolute", top: 4, left: 20, width: gridW, height: 14 }}>
           {Array.from({ length: cols + 1 }, (_, i) => (
             <div key={i} style={{ position: "absolute", left: i * cellSize, top: 0, transform: "translateX(-50%)", fontFamily: "'JetBrains Mono', monospace", fontSize: "0.6rem", color: "#9CA0B4", lineHeight: "14px" }}>
               {i === 0 ? "" : i}
@@ -259,7 +259,7 @@ function GridCanvas({ cols, rows, grid, onPaintStart, onPaintEnter }) {
         </div>
 
         {/* Bottom column labels */}
-        <div style={{ position: "absolute", top: gridH + 2, left: 0, width: gridW, height: 14 }}>
+        <div style={{ position: "absolute", top: gridH + 22, left: 20, width: gridW, height: 14 }}>
           {Array.from({ length: cols + 1 }, (_, i) => (
             <div key={i} style={{ position: "absolute", left: i * cellSize, top: 0, transform: "translateX(-50%)", fontFamily: "'JetBrains Mono', monospace", fontSize: "0.6rem", color: "#9CA0B4", lineHeight: "14px" }}>
               {i === 0 ? "" : i}
@@ -268,7 +268,7 @@ function GridCanvas({ cols, rows, grid, onPaintStart, onPaintEnter }) {
         </div>
 
         {/* Left row labels */}
-        <div style={{ position: "absolute", left: -20, top: 0, height: gridH, width: 20 }}>
+        <div style={{ position: "absolute", left: 0, top: 20, height: gridH, width: 18 }}>
           {Array.from({ length: rows + 1 }, (_, i) => (
             <div key={i} style={{ position: "absolute", top: i * cellSizeH, left: 0, transform: "translateY(-50%)", fontFamily: "'JetBrains Mono', monospace", fontSize: "0.6rem", color: "#9CA0B4", width: "100%", textAlign: "right", paddingRight: 4 }}>
               {i === 0 ? "" : i}
@@ -277,7 +277,7 @@ function GridCanvas({ cols, rows, grid, onPaintStart, onPaintEnter }) {
         </div>
 
         {/* Right row labels */}
-        <div style={{ position: "absolute", left: gridW + 2, top: 0, height: gridH, width: 20 }}>
+        <div style={{ position: "absolute", left: gridW + 22, top: 20, height: gridH, width: 18 }}>
           {Array.from({ length: rows + 1 }, (_, i) => (
             <div key={i} style={{ position: "absolute", top: i * cellSizeH, left: 0, transform: "translateY(-50%)", fontFamily: "'JetBrains Mono', monospace", fontSize: "0.6rem", color: "#9CA0B4", width: "100%", textAlign: "left", paddingLeft: 4 }}>
               {i === 0 ? "" : i}
@@ -302,7 +302,7 @@ function GridCanvas({ cols, rows, grid, onPaintStart, onPaintEnter }) {
           ))}
         </div>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -533,7 +533,7 @@ export default function GridPage({ onBack, initialPattern }) {
         style={{
           position: "relative", width: "100%", minHeight: "100vh",
           overflow: "hidden", display: "flex", alignItems: "center",
-          justifyContent: "center", padding: "24px", backgroundColor: "#FFFFFF",
+          justifyContent: "center", padding: "24px", backgroundColor: "#12141C",
           fontFamily: "'Inter', system-ui, sans-serif",
         }}
         onMouseUp={handleMouseUp}
@@ -572,7 +572,7 @@ export default function GridPage({ onBack, initialPattern }) {
     <div
       style={{
         position: "relative", width: "100%", minHeight: "100vh",
-        overflow: "hidden", display: "flex", backgroundColor: "#FFFFFF",
+        overflow: "hidden", display: "flex", backgroundColor: "#12141C",
         fontFamily: "'Inter', system-ui, sans-serif",
       }}
       onMouseUp={handleMouseUp}

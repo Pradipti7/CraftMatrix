@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import CraftMatrixLanding from './pages/LandingPage'
 import GridPage from './pages/GridPage'
+import PatternRecommendation from './pages/PatternRecommendation'
 import ImageToGridPage from './pages/ImageToGridPage'
 
 function App() {
@@ -17,6 +18,17 @@ function App() {
       <GridPage
         onBack={() => { setInitialPattern(null); setPage('landing') }}
         initialPattern={initialPattern}
+      />
+    )
+  }
+
+  if (page === 'patterns') {
+    return (
+      <PatternRecommendation
+        onBack={() => setPage('landing')}
+        onSelectPattern={handleSelectPattern}
+        onCreatePattern={() => setPage('grid')}
+        onUploadPhoto={() => setPage('image')}
       />
     )
   }

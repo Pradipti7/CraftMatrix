@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { INK, LINE, PAPER, MUTED, AMBER, TEAL, BASIC_COLORS } from "../theme";
+import { INK, LINE, PAPER, MUTED, AMBER, BASIC_COLORS } from "../theme";
 import GridSizeSelector from "../components/GridSizeSelector";
 import ColorWheel from "../components/ColorWheel";
 import useUndoRedo from "../hooks/useUndoRedo";

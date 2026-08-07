@@ -40,32 +40,7 @@ function GridField({ cols, rows }) {
   );
 }
 
-function GridControls({ cols, rows, onColsChange, onRowsChange }) {
-  return (
-    <div className="cm-controls" style={{
-      position: "fixed", bottom: 24, left: 24, zIndex: 20,
-      display: "flex", gap: 16, padding: "12px 18px",
-      backgroundColor: "#1A1D2B", border: `1px solid ${LINE}`,
-      borderRadius: 6, fontFamily: "'JetBrains Mono', monospace",
-      fontSize: "0.7rem", color: MUTED, letterSpacing: "0.05em",
-    }}>
-      <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <span style={{ textTransform: "uppercase", color: "#3A3F55", fontSize: "0.6rem" }}>Columns</span>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <input type="range" min={4} max={48} value={cols} onChange={(e) => onColsChange(Number(e.target.value))} style={{ width: 80, accentColor: AMBER }} />
-          <span style={{ color: AMBER, minWidth: 22, textAlign: "right" }}>{cols}</span>
-        </div>
-      </label>
-      <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <span style={{ textTransform: "uppercase", color: "#3A3F55", fontSize: "0.6rem" }}>Rows</span>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <input type="range" min={2} max={30} value={rows} onChange={(e) => onRowsChange(Number(e.target.value))} style={{ width: 80, accentColor: TEAL }} />
-          <span style={{ color: TEAL, minWidth: 22, textAlign: "right" }}>{rows}</span>
-        </div>
-      </label>
-    </div>
-  );
-}
+
 
 export default function CraftMatrixLanding({ onStartCreating, onPatterns, onHome, onSelectPattern, onUploadPhoto }) {
   const [ready, setReady] = useState(false);
@@ -80,10 +55,6 @@ export default function CraftMatrixLanding({ onStartCreating, onPatterns, onHome
 
   const scrollToPatterns = () => {
     patternsRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const handleSelectPattern = (pattern) => {
-    onSelectPattern(pattern);
   };
 
   return (
@@ -198,7 +169,7 @@ export default function CraftMatrixLanding({ onStartCreating, onPatterns, onHome
 
       {/* ── Patterns Section ──────────────────────────────────────── */}
       <div ref={patternsRef}>
-        <EmbeddedPatterns onSelectPattern={handleSelectPattern} onSeeMore={onPatterns} />
+        <EmbeddedPatterns onSelectPattern={onSelectPattern} onSeeMore={onPatterns} />
       </div>
     </div>
   );

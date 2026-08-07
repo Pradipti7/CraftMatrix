@@ -247,8 +247,8 @@ function GridCanvas({ cols, rows, grid, onPaintStart, onPaintEnter }) {
   const gridH = rows * cellSizeH;
 
   return (
-    <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 32, overflow: "auto" }}>
-      <div style={{ position: "relative" }}>
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 32, overflow: "auto" }}>
+      <div style={{ position: "relative", backgroundColor: "#FFFFFF", padding: 24, borderRadius: 8 }}>
         {/* Top column labels */}
         <div style={{ position: "absolute", top: -14, left: 0, width: gridW, height: 14 }}>
           {Array.from({ length: cols + 1 }, (_, i) => (
@@ -302,7 +302,7 @@ function GridCanvas({ cols, rows, grid, onPaintStart, onPaintEnter }) {
           ))}
         </div>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -533,7 +533,7 @@ export default function GridPage({ onBack, initialPattern }) {
         style={{
           position: "relative", width: "100%", minHeight: "100vh",
           overflow: "hidden", display: "flex", alignItems: "center",
-          justifyContent: "center", padding: "24px", backgroundColor: "#FFFFFF",
+          justifyContent: "center", padding: "24px", backgroundColor: "#12141C",
           fontFamily: "'Inter', system-ui, sans-serif",
         }}
         onMouseUp={handleMouseUp}
@@ -572,7 +572,7 @@ export default function GridPage({ onBack, initialPattern }) {
     <div
       style={{
         position: "relative", width: "100%", minHeight: "100vh",
-        overflow: "hidden", display: "flex", backgroundColor: "#FFFFFF",
+        overflow: "hidden", display: "flex", backgroundColor: "#12141C",
         fontFamily: "'Inter', system-ui, sans-serif",
       }}
       onMouseUp={handleMouseUp}

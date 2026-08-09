@@ -6,7 +6,7 @@ import useUndoRedo from "../hooks/useUndoRedo";
 
 const MAX_RECENT_COLORS = 8;
 
-function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash, onPickScreenColor, recentColors, zoom, setZoom, showGridLines, setShowGridLines, onSave, onLoad, onShowShortcuts, symmetry, setSymmetry, onRotateLeft, onRotateRight, onFlipHorizontal, onFlipVertical }) {
+function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash, onPickScreenColor, recentColors, zoom, setZoom, showGridLines, setShowGridLines, onSave, onLoad, onShowShortcuts, symmetry, setSymmetry, onRotateLeft, onRotateRight, onFlipHorizontal, onFlipVertical, fillPattern, setFillPattern, onApplyFillPattern }) {
   return (
     <div style={{
       width: 300, minWidth: 300, height: "100vh", overflowY: "auto",
@@ -186,6 +186,60 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
           </div>
         </div>
       )}
+
+      <div style={{ height: 1, backgroundColor: LINE }} />
+
+      {/* Fill Patterns */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          Fill Pattern
+        </span>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
+          {[
+            { id: "none", label: "Off" },
+            { id: "checker", label: "▦" },
+            { id: "diagonal", label: "╱" },
+            { id: "stripes-h", label: "≡" },
+            { id: "stripes-v", label: "||" },
+            { id: "dots", label: "⋯" },
+            { id: "gradient-h", label: "▶" },
+            { id: "gradient-v", label: "▼" },
+          ].map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => onSetFillPattern(p.id)}
+              title={p.label}
+              style={{
+                height: 32, display: "flex", alignItems: "center", justifyContent: "center",
+                backgroundColor: fillPattern === p.id ? "#262A3A" : "transparent",
+                border: `1px solid ${fillPattern === p.id ? AMBER : LINE}`,
+                borderRadius: 4, cursor: "pointer", color: fillPattern === p.id ? AMBER : MUTED,
+                fontSize: "0.85rem",
+                transition: "border-color 0.2s ease, background-color 0.2s ease",
+              }}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+        {fillPattern !== "none" && (
+          <button
+            type="button"
+            onClick={onApplyFillPattern}
+            style={{
+              width: "100%", padding: "10px", backgroundColor: TEAL, color: INK,
+              border: "none", borderRadius: 4, fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "0.7rem", fontWeight: 500, letterSpacing: "0.05em", cursor: "pointer",
+              transition: "transform 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.transform = "translateY(-1px)"; }}
+            onMouseLeave={(e) => { e.target.style.transform = "translateY(0)"; }}
+          >
+            Apply Pattern
+          </button>
+        )}
+      </div>
 
       <div style={{ height: 1, backgroundColor: LINE }} />
 
@@ -600,6 +654,7 @@ export default function GridPage({ onBack, initialPattern }) {
   const [showGridLines, setShowGridLines] = useState(true);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [symmetry, setSymmetry] = useState("none");
+  const [fillPattern, setFillPattern] = useState("none");
 
   const addRecentColor = useCallback((color) => {
     setRecentColors((prev) => {
@@ -835,6 +890,50 @@ export default function GridPage({ onBack, initialPattern }) {
     reset(Array.from({ length: cols * rows }, () => null));
   };
 
+  const handleApplyFillPattern = () => {
+    const newGrid = [];
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        let color = null;
+        switch (fillPattern) {
+          case "checker":
+            color = (r + c) % 2 === 0 ? selectedColor : null;
+            break;
+          case "diagonal":
+            color = (r + c) % 3 === 0 ? selectedColor : null;
+            break;
+          case "stripes-h":
+            color = r % 2 === 0 ? selectedColor : null;
+            break;
+          case "stripes-v":
+            color = c % 2 === 0 ? selectedColor : null;
+            break;
+          case "dots":
+            color = (r % 3 === 1 && c % 3 === 1) ? selectedColor : null;
+            break;
+          case "gradient-h":
+            if (c / cols < 0.3) color = selectedColor;
+            else if (c / cols < 0.6) {
+              const alpha = Math.round(((c / cols) - 0.3) / 0.3 * 255).toString(16).padStart(2, "0");
+              color = selectedColor + alpha;
+            }
+            break;
+          case "gradient-v":
+            if (r / rows < 0.3) color = selectedColor;
+            else if (r / rows < 0.6) {
+              const alpha = Math.round(((r / rows) - 0.3) / 0.3 * 255).toString(16).padStart(2, "0");
+              color = selectedColor + alpha;
+            }
+            break;
+          default:
+            color = null;
+        }
+        newGrid.push(color);
+      }
+    }
+    reset(newGrid);
+  };
+
   const getGrid2D = () => {
     const grid2D = [];
     for (let r = 0; r < rows; r++) {
@@ -1063,6 +1162,9 @@ export default function GridPage({ onBack, initialPattern }) {
         onRotateRight={handleRotateRight}
         onFlipHorizontal={handleFlipHorizontal}
         onFlipVertical={handleFlipVertical}
+        fillPattern={fillPattern}
+        setFillPattern={setFillPattern}
+        onApplyFillPattern={handleApplyFillPattern}
       />
       <GridCanvas
         cols={cols}

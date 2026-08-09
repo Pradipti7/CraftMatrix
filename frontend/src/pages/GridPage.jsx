@@ -6,7 +6,7 @@ import useUndoRedo from "../hooks/useUndoRedo";
 
 const MAX_RECENT_COLORS = 8;
 
-function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash, onPickScreenColor, recentColors, zoom, setZoom, showGridLines, setShowGridLines, onSave, onLoad, onShowShortcuts }) {
+function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash, onPickScreenColor, recentColors, zoom, setZoom, showGridLines, setShowGridLines, onSave, onLoad, onShowShortcuts, symmetry, setSymmetry }) {
   return (
     <div style={{
       width: 300, minWidth: 300, height: "100vh", overflowY: "auto",
@@ -276,6 +276,40 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
 
       <div style={{ height: 1, backgroundColor: LINE }} />
 
+      {/* Symmetry Mode */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          Symmetry ({symmetry === "none" ? "Off" : symmetry})
+        </span>
+        <div style={{ display: "flex", gap: 6 }}>
+          {[
+            { mode: "none", label: "Off", title: "No symmetry" },
+            { mode: "horizontal", label: "↔", title: "Horizontal (left-right)" },
+            { mode: "vertical", label: "↕", title: "Vertical (top-bottom)" },
+            { mode: "both", label: "✦", title: "Both axes" },
+          ].map(({ mode, label, title }) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setSymmetry(mode)}
+              title={title}
+              style={{
+                flex: 1, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+                backgroundColor: symmetry === mode ? "#262A3A" : "transparent",
+                border: `1px solid ${symmetry === mode ? AMBER : LINE}`,
+                borderRadius: 4, cursor: "pointer", color: symmetry === mode ? AMBER : MUTED,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: "0.9rem",
+                transition: "border-color 0.2s ease, background-color 0.2s ease",
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ height: 1, backgroundColor: LINE }} />
+
       {/* Undo / Redo */}
       <div style={{ display: "flex", gap: 8 }}>
         <button
@@ -488,6 +522,7 @@ export default function GridPage({ onBack, initialPattern }) {
   const [zoom, setZoom] = useState(1);
   const [showGridLines, setShowGridLines] = useState(true);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [symmetry, setSymmetry] = useState("none");
 
   const addRecentColor = useCallback((color) => {
     setRecentColors((prev) => {
@@ -531,6 +566,12 @@ export default function GridPage({ onBack, initialPattern }) {
         setZoom(1);
       } else if (e.key === "g" && !isMod) {
         setShowGridLines((v) => !v);
+      } else if (e.key === "m" && !isMod) {
+        setSymmetry((s) => {
+          const modes = ["none", "horizontal", "vertical", "both"];
+          const currentIndex = modes.indexOf(s);
+          return modes[(currentIndex + 1) % modes.length];
+        });
       } else if (e.key === "?") {
         setShowShortcuts((v) => !v);
       }
@@ -552,10 +593,33 @@ export default function GridPage({ onBack, initialPattern }) {
       setGrid((prev) => {
         const next = [...prev];
         next[index] = selectedColor;
+
+        if (symmetry !== "none") {
+          const col = index % cols;
+          const row = Math.floor(index / cols);
+
+          if (symmetry === "horizontal" || symmetry === "both") {
+            const mirrorCol = cols - 1 - col;
+            const mirrorIndex = row * cols + mirrorCol;
+            if (mirrorIndex !== index) next[mirrorIndex] = selectedColor;
+          }
+          if (symmetry === "vertical" || symmetry === "both") {
+            const mirrorRow = rows - 1 - row;
+            const mirrorIndex = mirrorRow * cols + col;
+            if (mirrorIndex !== index) next[mirrorIndex] = selectedColor;
+          }
+          if (symmetry === "both") {
+            const mirrorCol = cols - 1 - col;
+            const mirrorRow = rows - 1 - row;
+            const mirrorIndex = mirrorRow * cols + mirrorCol;
+            if (mirrorIndex !== index) next[mirrorIndex] = selectedColor;
+          }
+        }
+
         return next;
       });
     },
-    [selectedColor, setGrid, addRecentColor]
+    [selectedColor, setGrid, addRecentColor, symmetry, cols, rows]
   );
 
   const handleFloodFill = useCallback(
@@ -642,6 +706,29 @@ export default function GridPage({ onBack, initialPattern }) {
       setGrid((prev) => {
         const next = [...prev];
         next[index] = null;
+
+        if (symmetry !== "none") {
+          const col = index % cols;
+          const row = Math.floor(index / cols);
+
+          if (symmetry === "horizontal" || symmetry === "both") {
+            const mirrorCol = cols - 1 - col;
+            const mirrorIndex = row * cols + mirrorCol;
+            if (mirrorIndex !== index) next[mirrorIndex] = null;
+          }
+          if (symmetry === "vertical" || symmetry === "both") {
+            const mirrorRow = rows - 1 - row;
+            const mirrorIndex = mirrorRow * cols + col;
+            if (mirrorIndex !== index) next[mirrorIndex] = null;
+          }
+          if (symmetry === "both") {
+            const mirrorCol = cols - 1 - col;
+            const mirrorRow = rows - 1 - row;
+            const mirrorIndex = mirrorRow * cols + mirrorCol;
+            if (mirrorIndex !== index) next[mirrorIndex] = null;
+          }
+        }
+
         return next;
       });
     } else {
@@ -833,6 +920,8 @@ export default function GridPage({ onBack, initialPattern }) {
         onSave={handleSave}
         onLoad={handleLoad}
         onShowShortcuts={() => setShowShortcuts(true)}
+        symmetry={symmetry}
+        setSymmetry={setSymmetry}
       />
       <GridCanvas
         cols={cols}
@@ -869,6 +958,7 @@ export default function GridPage({ onBack, initialPattern }) {
                 ["E", "Eraser tool"],
                 ["I", "Eyedropper (pick color from screen)"],
                 ["F", "Flood fill tool"],
+                ["M", "Cycle symmetry mode (off → horizontal → vertical → both)"],
                 ["G", "Toggle grid lines"],
                 ["+ / =", "Zoom in"],
                 ["-", "Zoom out"],

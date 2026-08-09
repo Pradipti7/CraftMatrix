@@ -6,7 +6,7 @@ import useUndoRedo from "../hooks/useUndoRedo";
 
 const MAX_RECENT_COLORS = 8;
 
-function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash, onPickScreenColor, recentColors, zoom, setZoom, showGridLines, setShowGridLines, onSave, onLoad, onShowShortcuts }) {
+function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash, onPickScreenColor, recentColors, zoom, setZoom, showGridLines, setShowGridLines, onSave, onLoad, onShowShortcuts, symmetry, setSymmetry, onRotateLeft, onRotateRight, onFlipHorizontal, onFlipVertical }) {
   return (
     <div style={{
       width: 300, minWidth: 300, height: "100vh", overflowY: "auto",
@@ -276,6 +276,40 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
 
       <div style={{ height: 1, backgroundColor: LINE }} />
 
+      {/* Symmetry Mode */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          Symmetry ({symmetry === "none" ? "Off" : symmetry})
+        </span>
+        <div style={{ display: "flex", gap: 6 }}>
+          {[
+            { mode: "none", label: "Off", title: "No symmetry" },
+            { mode: "horizontal", label: "↔", title: "Horizontal (left-right)" },
+            { mode: "vertical", label: "↕", title: "Vertical (top-bottom)" },
+            { mode: "both", label: "✦", title: "Both axes" },
+          ].map(({ mode, label, title }) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setSymmetry(mode)}
+              title={title}
+              style={{
+                flex: 1, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+                backgroundColor: symmetry === mode ? "#262A3A" : "transparent",
+                border: `1px solid ${symmetry === mode ? AMBER : LINE}`,
+                borderRadius: 4, cursor: "pointer", color: symmetry === mode ? AMBER : MUTED,
+                fontFamily: "'JetBrains Mono', monospace", fontSize: "0.9rem",
+                transition: "border-color 0.2s ease, background-color 0.2s ease",
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ height: 1, backgroundColor: LINE }} />
+
       {/* Undo / Redo */}
       <div style={{ display: "flex", gap: 8 }}>
         <button
@@ -312,6 +346,83 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
         >
           &#8631; Redo
         </button>
+      </div>
+
+      <div style={{ height: 1, backgroundColor: LINE }} />
+
+      {/* Rotate / Flip */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          Transform
+        </span>
+        <div style={{ display: "flex", gap: 6 }}>
+          <button
+            type="button"
+            onClick={onRotateLeft}
+            title="Rotate Left 90°"
+            style={{
+              flex: 1, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: "transparent", border: `1px solid ${LINE}`, borderRadius: 4,
+              cursor: "pointer", color: MUTED, fontSize: "0.7rem",
+              fontFamily: "'JetBrains Mono', monospace",
+              transition: "border-color 0.2s ease, color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = LINE; e.target.style.color = MUTED; }}
+          >
+            ↺ Left
+          </button>
+          <button
+            type="button"
+            onClick={onRotateRight}
+            title="Rotate Right 90°"
+            style={{
+              flex: 1, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: "transparent", border: `1px solid ${LINE}`, borderRadius: 4,
+              cursor: "pointer", color: MUTED, fontSize: "0.7rem",
+              fontFamily: "'JetBrains Mono', monospace",
+              transition: "border-color 0.2s ease, color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = LINE; e.target.style.color = MUTED; }}
+          >
+            Right ↻
+          </button>
+        </div>
+        <div style={{ display: "flex", gap: 6 }}>
+          <button
+            type="button"
+            onClick={onFlipHorizontal}
+            title="Flip Horizontal"
+            style={{
+              flex: 1, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: "transparent", border: `1px solid ${LINE}`, borderRadius: 4,
+              cursor: "pointer", color: MUTED, fontSize: "0.7rem",
+              fontFamily: "'JetBrains Mono', monospace",
+              transition: "border-color 0.2s ease, color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = LINE; e.target.style.color = MUTED; }}
+          >
+            ↔ Flip H
+          </button>
+          <button
+            type="button"
+            onClick={onFlipVertical}
+            title="Flip Vertical"
+            style={{
+              flex: 1, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: "transparent", border: `1px solid ${LINE}`, borderRadius: 4,
+              cursor: "pointer", color: MUTED, fontSize: "0.7rem",
+              fontFamily: "'JetBrains Mono', monospace",
+              transition: "border-color 0.2s ease, color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = LINE; e.target.style.color = MUTED; }}
+          >
+            ↕ Flip V
+          </button>
+        </div>
       </div>
 
       <div style={{ height: 1, backgroundColor: LINE }} />
@@ -488,6 +599,7 @@ export default function GridPage({ onBack, initialPattern }) {
   const [zoom, setZoom] = useState(1);
   const [showGridLines, setShowGridLines] = useState(true);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [symmetry, setSymmetry] = useState("none");
 
   const addRecentColor = useCallback((color) => {
     setRecentColors((prev) => {
@@ -531,6 +643,12 @@ export default function GridPage({ onBack, initialPattern }) {
         setZoom(1);
       } else if (e.key === "g" && !isMod) {
         setShowGridLines((v) => !v);
+      } else if (e.key === "m" && !isMod) {
+        setSymmetry((s) => {
+          const modes = ["none", "horizontal", "vertical", "both"];
+          const currentIndex = modes.indexOf(s);
+          return modes[(currentIndex + 1) % modes.length];
+        });
       } else if (e.key === "?") {
         setShowShortcuts((v) => !v);
       }
@@ -552,10 +670,33 @@ export default function GridPage({ onBack, initialPattern }) {
       setGrid((prev) => {
         const next = [...prev];
         next[index] = selectedColor;
+
+        if (symmetry !== "none") {
+          const col = index % cols;
+          const row = Math.floor(index / cols);
+
+          if (symmetry === "horizontal" || symmetry === "both") {
+            const mirrorCol = cols - 1 - col;
+            const mirrorIndex = row * cols + mirrorCol;
+            if (mirrorIndex !== index) next[mirrorIndex] = selectedColor;
+          }
+          if (symmetry === "vertical" || symmetry === "both") {
+            const mirrorRow = rows - 1 - row;
+            const mirrorIndex = mirrorRow * cols + col;
+            if (mirrorIndex !== index) next[mirrorIndex] = selectedColor;
+          }
+          if (symmetry === "both") {
+            const mirrorCol = cols - 1 - col;
+            const mirrorRow = rows - 1 - row;
+            const mirrorIndex = mirrorRow * cols + mirrorCol;
+            if (mirrorIndex !== index) next[mirrorIndex] = selectedColor;
+          }
+        }
+
         return next;
       });
     },
-    [selectedColor, setGrid, addRecentColor]
+    [selectedColor, setGrid, addRecentColor, symmetry, cols, rows]
   );
 
   const handleFloodFill = useCallback(
@@ -642,6 +783,29 @@ export default function GridPage({ onBack, initialPattern }) {
       setGrid((prev) => {
         const next = [...prev];
         next[index] = null;
+
+        if (symmetry !== "none") {
+          const col = index % cols;
+          const row = Math.floor(index / cols);
+
+          if (symmetry === "horizontal" || symmetry === "both") {
+            const mirrorCol = cols - 1 - col;
+            const mirrorIndex = row * cols + mirrorCol;
+            if (mirrorIndex !== index) next[mirrorIndex] = null;
+          }
+          if (symmetry === "vertical" || symmetry === "both") {
+            const mirrorRow = rows - 1 - row;
+            const mirrorIndex = mirrorRow * cols + col;
+            if (mirrorIndex !== index) next[mirrorIndex] = null;
+          }
+          if (symmetry === "both") {
+            const mirrorCol = cols - 1 - col;
+            const mirrorRow = rows - 1 - row;
+            const mirrorIndex = mirrorRow * cols + mirrorCol;
+            if (mirrorIndex !== index) next[mirrorIndex] = null;
+          }
+        }
+
         return next;
       });
     } else {
@@ -669,6 +833,66 @@ export default function GridPage({ onBack, initialPattern }) {
 
   const handleClearGrid = () => {
     reset(Array.from({ length: cols * rows }, () => null));
+  };
+
+  const getGrid2D = () => {
+    const grid2D = [];
+    for (let r = 0; r < rows; r++) {
+      grid2D.push(grid.slice(r * cols, (r + 1) * cols));
+    }
+    return grid2D;
+  };
+
+  const handleRotateRight = () => {
+    const grid2D = getGrid2D();
+    const newRows = cols;
+    const newCols = rows;
+    const newGrid = [];
+    for (let r = 0; r < newRows; r++) {
+      for (let c = 0; c < newCols; c++) {
+        newGrid.push(grid2D[newCols - 1 - c][r]);
+      }
+    }
+    setCols(newCols);
+    setRows(newRows);
+    reset(newGrid);
+  };
+
+  const handleRotateLeft = () => {
+    const grid2D = getGrid2D();
+    const newRows = cols;
+    const newCols = rows;
+    const newGrid = [];
+    for (let r = 0; r < newRows; r++) {
+      for (let c = 0; c < newCols; c++) {
+        newGrid.push(grid2D[c][newRows - 1 - r]);
+      }
+    }
+    setCols(newCols);
+    setRows(newRows);
+    reset(newGrid);
+  };
+
+  const handleFlipHorizontal = () => {
+    const grid2D = getGrid2D();
+    const newGrid = [];
+    for (let r = 0; r < rows; r++) {
+      for (let c = cols - 1; c >= 0; c--) {
+        newGrid.push(grid2D[r][c]);
+      }
+    }
+    reset(newGrid);
+  };
+
+  const handleFlipVertical = () => {
+    const grid2D = getGrid2D();
+    const newGrid = [];
+    for (let r = rows - 1; r >= 0; r--) {
+      for (let c = 0; c < cols; c++) {
+        newGrid.push(grid2D[r][c]);
+      }
+    }
+    reset(newGrid);
   };
 
   const handleSave = () => {
@@ -833,6 +1057,12 @@ export default function GridPage({ onBack, initialPattern }) {
         onSave={handleSave}
         onLoad={handleLoad}
         onShowShortcuts={() => setShowShortcuts(true)}
+        symmetry={symmetry}
+        setSymmetry={setSymmetry}
+        onRotateLeft={handleRotateLeft}
+        onRotateRight={handleRotateRight}
+        onFlipHorizontal={handleFlipHorizontal}
+        onFlipVertical={handleFlipVertical}
       />
       <GridCanvas
         cols={cols}
@@ -869,6 +1099,7 @@ export default function GridPage({ onBack, initialPattern }) {
                 ["E", "Eraser tool"],
                 ["I", "Eyedropper (pick color from screen)"],
                 ["F", "Flood fill tool"],
+                ["M", "Cycle symmetry mode (off → horizontal → vertical → both)"],
                 ["G", "Toggle grid lines"],
                 ["+ / =", "Zoom in"],
                 ["-", "Zoom out"],

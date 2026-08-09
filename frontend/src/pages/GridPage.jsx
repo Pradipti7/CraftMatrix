@@ -4,7 +4,9 @@ import GridSizeSelector from "../components/GridSizeSelector";
 import ColorWheel from "../components/ColorWheel";
 import useUndoRedo from "../hooks/useUndoRedo";
 
-function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash }) {
+const MAX_RECENT_COLORS = 8;
+
+function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash, onPickScreenColor, recentColors, zoom, setZoom, showGridLines, setShowGridLines, onSave, onLoad, onShowShortcuts }) {
   return (
     <div style={{
       width: 300, minWidth: 300, height: "100vh", overflowY: "auto",
@@ -99,7 +101,7 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
           </button>
           <button
             type="button"
-            onClick={() => onSelectToolWithHistory("eyedropper")}
+            onClick={onPickScreenColor}
             title="Eyedropper (I)"
             style={{
               width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
@@ -165,6 +167,115 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
 
       <div style={{ height: 1, backgroundColor: LINE }} />
 
+      {/* Recent Colors */}
+      {recentColors.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+            Recent
+          </span>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {recentColors.map((color, i) => (
+              <div
+                key={`recent-${color}-${i}`}
+                className={`palette-color ${selectedColor === color ? "active" : ""}`}
+                style={{ backgroundColor: color, width: 28, height: 28 }}
+                onClick={() => onSelectColor(color)}
+                title={color}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div style={{ height: 1, backgroundColor: LINE }} />
+
+      {/* Zoom Controls */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          Zoom ({Math.round(zoom * 100)}%)
+        </span>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <button
+            type="button"
+            onClick={() => setZoom((z) => Math.max(0.25, z - 0.25))}
+            style={{
+              width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: "transparent", border: `1px solid ${LINE}`, borderRadius: 4,
+              cursor: "pointer", color: PAPER, fontSize: "1rem",
+              transition: "border-color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = AMBER; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = LINE; }}
+            title="Zoom Out (-)"
+          >
+            −
+          </button>
+          <input
+            type="range"
+            min={25}
+            max={300}
+            value={Math.round(zoom * 100)}
+            onChange={(e) => setZoom(Number(e.target.value) / 100)}
+            style={{ flex: 1, accentColor: AMBER }}
+          />
+          <button
+            type="button"
+            onClick={() => setZoom((z) => Math.min(3, z + 0.25))}
+            style={{
+              width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: "transparent", border: `1px solid ${LINE}`, borderRadius: 4,
+              cursor: "pointer", color: PAPER, fontSize: "1rem",
+              transition: "border-color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = AMBER; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = LINE; }}
+            title="Zoom In (+)"
+          >
+            +
+          </button>
+          <button
+            type="button"
+            onClick={() => setZoom(1)}
+            style={{
+              padding: "4px 8px", backgroundColor: "transparent", border: `1px solid ${LINE}`,
+              borderRadius: 4, cursor: "pointer", color: MUTED, fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "0.65rem", transition: "border-color 0.2s ease, color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = LINE; e.target.style.color = MUTED; }}
+            title="Reset Zoom (0)"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div style={{ height: 1, backgroundColor: LINE }} />
+
+      {/* Grid Lines Toggle */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          Grid Lines
+        </span>
+        <button
+          type="button"
+          onClick={() => setShowGridLines(!showGridLines)}
+          style={{
+            width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer",
+            backgroundColor: showGridLines ? AMBER : "#3A3F55",
+            position: "relative", transition: "background-color 0.2s ease",
+          }}
+        >
+          <div style={{
+            position: "absolute", top: 3, left: showGridLines ? 23 : 3,
+            width: 18, height: 18, borderRadius: "50%", backgroundColor: PAPER,
+            transition: "left 0.2s ease",
+          }} />
+        </button>
+      </div>
+
+      <div style={{ height: 1, backgroundColor: LINE }} />
+
       {/* Undo / Redo */}
       <div style={{ display: "flex", gap: 8 }}>
         <button
@@ -207,6 +318,40 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
 
       {/* Actions */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: "auto" }}>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            type="button"
+            onClick={onSave}
+            style={{
+              flex: 1, padding: "8px", backgroundColor: "transparent",
+              color: PAPER, border: `1px solid ${LINE}`, borderRadius: 4,
+              fontFamily: "'JetBrains Mono', monospace", fontSize: "0.65rem",
+              letterSpacing: "0.05em", cursor: "pointer",
+              transition: "border-color 0.2s ease, color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = LINE; e.target.style.color = PAPER; }}
+            title="Save to Browser (Ctrl+S)"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={onLoad}
+            style={{
+              flex: 1, padding: "8px", backgroundColor: "transparent",
+              color: PAPER, border: `1px solid ${LINE}`, borderRadius: 4,
+              fontFamily: "'JetBrains Mono', monospace", fontSize: "0.65rem",
+              letterSpacing: "0.05em", cursor: "pointer",
+              transition: "border-color 0.2s ease, color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = LINE; e.target.style.color = PAPER; }}
+            title="Load from Browser (Ctrl+O)"
+          >
+            Load
+          </button>
+        </div>
         <button
           type="button"
           onClick={onExportPNG}
@@ -236,13 +381,30 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
         >
           Clear Grid
         </button>
+        <button
+          type="button"
+          onClick={onShowShortcuts}
+          style={{
+            width: "100%", padding: "8px", backgroundColor: "transparent",
+            color: MUTED, border: `1px solid ${LINE}`, borderRadius: 4,
+            fontFamily: "'JetBrains Mono', monospace", fontSize: "0.65rem",
+            letterSpacing: "0.05em", cursor: "pointer",
+            transition: "border-color 0.2s ease, color 0.2s ease",
+          }}
+          onMouseEnter={(e) => { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; }}
+          onMouseLeave={(e) => { e.target.style.borderColor = LINE; e.target.style.color = MUTED; }}
+        >
+          Keyboard Shortcuts (?)
+        </button>
       </div>
     </div>
   );
 }
-function GridCanvas({ cols, rows, grid, onPaintStart, onPaintEnter }) {
-  const cellSize = Math.min(28, (window.innerWidth - 340) / cols);
-  const cellSizeH = Math.min(28, (window.innerHeight - 80) / rows);
+function GridCanvas({ cols, rows, grid, onPaintStart, onPaintEnter, zoom, showGridLines }) {
+  const baseCellSize = Math.min(28, (window.innerWidth - 340) / cols);
+  const baseCellSizeH = Math.min(28, (window.innerHeight - 80) / rows);
+  const cellSize = baseCellSize * zoom;
+  const cellSizeH = baseCellSizeH * zoom;
   const gridW = cols * cellSize;
   const gridH = rows * cellSizeH;
 
@@ -289,13 +451,17 @@ function GridCanvas({ cols, rows, grid, onPaintStart, onPaintEnter }) {
         <div style={{
           display: "grid", gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
           gridTemplateRows: `repeat(${rows}, ${cellSizeH}px)`,
-          border: "1px solid #D1D5DB", borderRadius: 2, userSelect: "none",
+          border: showGridLines ? "1px solid #D1D5DB" : "none", borderRadius: 2, userSelect: "none",
         }}>
           {grid.map((color, index) => (
             <div
               key={index}
               className="grid-cell"
-              style={{ backgroundColor: color || "#F3F4F6" }}
+              style={{
+                backgroundColor: color || "#F3F4F6",
+                borderRight: showGridLines ? "1px solid #D1D5DB" : "none",
+                borderBottom: showGridLines ? "1px solid #D1D5DB" : "none",
+              }}
               onMouseDown={() => onPaintStart(index)}
               onMouseEnter={() => onPaintEnter(index)}
             />
@@ -317,8 +483,18 @@ export default function GridPage({ onBack, initialPattern }) {
   const [isPainting, setIsPainting] = useState(false);
   const [showColorWheel, setShowColorWheel] = useState(true);
   const [activeTool, setActiveTool] = useState("paint");
-  const [previousTool, setPreviousTool] = useState("paint");
   const [eyedropperFlash, setEyedropperFlash] = useState(false);
+  const [recentColors, setRecentColors] = useState([]);
+  const [zoom, setZoom] = useState(1);
+  const [showGridLines, setShowGridLines] = useState(true);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+
+  const addRecentColor = useCallback((color) => {
+    setRecentColors((prev) => {
+      const filtered = prev.filter((c) => c !== color);
+      return [color, ...filtered].slice(0, MAX_RECENT_COLORS);
+    });
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -333,15 +509,30 @@ export default function GridPage({ onBack, initialPattern }) {
       } else if (isMod && e.key === "y") {
         e.preventDefault();
         redo();
+      } else if (isMod && e.key === "s") {
+        e.preventDefault();
+        handleSave();
+      } else if (isMod && e.key === "o") {
+        e.preventDefault();
+        handleLoad();
       } else if (e.key === "f" && !isMod) {
         setActiveTool("fill");
       } else if (e.key === "p" && !isMod) {
         setActiveTool("paint");
       } else if (e.key === "i" && !isMod) {
-        setPreviousTool(activeTool);
-        setActiveTool("eyedropper");
+        handlePickScreenColor();
       } else if (e.key === "e" && !isMod) {
         setActiveTool("eraser");
+      } else if (e.key === "=" || e.key === "+") {
+        setZoom((z) => Math.min(3, z + 0.25));
+      } else if (e.key === "-") {
+        setZoom((z) => Math.max(0.25, z - 0.25));
+      } else if (e.key === "0" && !isMod) {
+        setZoom(1);
+      } else if (e.key === "g" && !isMod) {
+        setShowGridLines((v) => !v);
+      } else if (e.key === "?") {
+        setShowShortcuts((v) => !v);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -357,13 +548,14 @@ export default function GridPage({ onBack, initialPattern }) {
 
   const handlePaint = useCallback(
     (index) => {
+      addRecentColor(selectedColor);
       setGrid((prev) => {
         const next = [...prev];
         next[index] = selectedColor;
         return next;
       });
     },
-    [selectedColor, setGrid]
+    [selectedColor, setGrid, addRecentColor]
   );
 
   const handleFloodFill = useCallback(
@@ -398,6 +590,26 @@ export default function GridPage({ onBack, initialPattern }) {
     [selectedColor, setGrid, cols, rows]
   );
 
+  const handlePickScreenColor = useCallback(async () => {
+    if (typeof window.EyeDropper === "undefined") {
+      alert("EyeDropper API is not supported in this browser.");
+      return;
+    }
+    try {
+      const eyeDropper = new window.EyeDropper();
+      const result = await eyeDropper.open();
+      const hex = result.sRGBHex.toUpperCase();
+      setSelectedColor(hex);
+      if (!palette.includes(hex)) {
+        setPalette((prev) => [...prev, hex]);
+      }
+      setEyedropperFlash(true);
+      setTimeout(() => setEyedropperFlash(false), 300);
+    } catch {
+      // user cancelled
+    }
+  }, [palette]);
+
   const handleMouseDown = (index) => {
     if (activeTool === "fill") {
       beginStroke();
@@ -406,16 +618,7 @@ export default function GridPage({ onBack, initialPattern }) {
       return;
     }
     if (activeTool === "eyedropper") {
-      const pickedColor = grid[index];
-      if (pickedColor) {
-        setSelectedColor(pickedColor);
-        if (!palette.includes(pickedColor)) {
-          setPalette((prev) => [...prev, pickedColor]);
-        }
-        setEyedropperFlash(true);
-        setTimeout(() => setEyedropperFlash(false), 300);
-      }
-      setActiveTool(previousTool);
+      handlePickScreenColor();
       return;
     }
     if (activeTool === "eraser") {
@@ -461,14 +664,36 @@ export default function GridPage({ onBack, initialPattern }) {
   };
 
   const handleSelectToolWithHistory = (tool) => {
-    if (tool === "eyedropper") {
-      setPreviousTool(activeTool);
-    }
     setActiveTool(tool);
   };
 
   const handleClearGrid = () => {
     reset(Array.from({ length: cols * rows }, () => null));
+  };
+
+  const handleSave = () => {
+    const data = { cols, rows, grid, palette, selectedColor };
+    localStorage.setItem("craftmatrix-project", JSON.stringify(data));
+    alert("Project saved to browser!");
+  };
+
+  const handleLoad = () => {
+    const saved = localStorage.getItem("craftmatrix-project");
+    if (!saved) {
+      alert("No saved project found.");
+      return;
+    }
+    try {
+      const data = JSON.parse(saved);
+      setCols(data.cols);
+      setRows(data.rows);
+      setPalette(data.palette);
+      setSelectedColor(data.selectedColor);
+      reset(data.grid);
+      setGridCreated(true);
+    } catch {
+      alert("Failed to load project.");
+    }
   };
 
   const handleExportPNG = () => {
@@ -599,6 +824,15 @@ export default function GridPage({ onBack, initialPattern }) {
         onSelectTool={setActiveTool}
         onSelectToolWithHistory={handleSelectToolWithHistory}
         eyedropperFlash={eyedropperFlash}
+        onPickScreenColor={handlePickScreenColor}
+        recentColors={recentColors}
+        zoom={zoom}
+        setZoom={setZoom}
+        showGridLines={showGridLines}
+        setShowGridLines={setShowGridLines}
+        onSave={handleSave}
+        onLoad={handleLoad}
+        onShowShortcuts={() => setShowShortcuts(true)}
       />
       <GridCanvas
         cols={cols}
@@ -606,7 +840,71 @@ export default function GridPage({ onBack, initialPattern }) {
         grid={grid}
         onPaintStart={handleMouseDown}
         onPaintEnter={handleMouseEnter}
+        zoom={zoom}
+        showGridLines={showGridLines}
       />
+
+      {/* Shortcuts Modal */}
+      {showShortcuts && (
+        <div
+          style={{
+            position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.7)",
+            display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000,
+          }}
+          onClick={() => setShowShortcuts(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "#1A1D2B", border: `1px solid ${LINE}`, borderRadius: 8,
+              padding: "24px 32px", maxWidth: 400, width: "90%", maxHeight: "80vh", overflowY: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: "0 0 16px", fontFamily: "'Space Grotesk', sans-serif", color: PAPER, fontSize: "1.2rem" }}>
+              Keyboard Shortcuts
+            </h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {[
+                ["P", "Paint tool"],
+                ["E", "Eraser tool"],
+                ["I", "Eyedropper (pick color from screen)"],
+                ["F", "Flood fill tool"],
+                ["G", "Toggle grid lines"],
+                ["+ / =", "Zoom in"],
+                ["-", "Zoom out"],
+                ["0", "Reset zoom"],
+                ["Ctrl+Z", "Undo"],
+                ["Ctrl+Shift+Z", "Redo"],
+                ["Ctrl+Y", "Redo"],
+                ["Ctrl+S", "Save project"],
+                ["Ctrl+O", "Load project"],
+                ["?", "Toggle this help"],
+              ].map(([key, desc]) => (
+                <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.75rem", color: MUTED }}>{desc}</span>
+                  <kbd style={{
+                    padding: "2px 8px", backgroundColor: INK, border: `1px solid ${LINE}`,
+                    borderRadius: 4, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.7rem", color: AMBER,
+                  }}>
+                    {key}
+                  </kbd>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowShortcuts(false)}
+              style={{
+                marginTop: 20, width: "100%", padding: "10px", backgroundColor: AMBER, color: INK,
+                border: "none", borderRadius: 4, fontFamily: "'JetBrains Mono', monospace",
+                fontSize: "0.75rem", fontWeight: 500, cursor: "pointer",
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

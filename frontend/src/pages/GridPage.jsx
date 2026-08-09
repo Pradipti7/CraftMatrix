@@ -6,7 +6,7 @@ import useUndoRedo from "../hooks/useUndoRedo";
 
 const MAX_RECENT_COLORS = 8;
 
-function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash, onPickScreenColor, recentColors, zoom, setZoom, showGridLines, setShowGridLines, onSave, onLoad, onShowShortcuts, symmetry, setSymmetry, onRotateLeft, onRotateRight, onFlipHorizontal, onFlipVertical, fillPattern, setFillPattern, onApplyFillPattern }) {
+function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onExportSVG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash, onPickScreenColor, recentColors, zoom, setZoom, showGridLines, setShowGridLines, onSave, onLoad, onShowShortcuts, symmetry, setSymmetry, onRotateLeft, onRotateRight, onFlipHorizontal, onFlipVertical, fillPattern, setFillPattern, onApplyFillPattern }) {
   return (
     <div style={{
       width: 300, minWidth: 300, height: "100vh", overflowY: "auto",
@@ -517,20 +517,36 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
             Load
           </button>
         </div>
-        <button
-          type="button"
-          onClick={onExportPNG}
-          style={{
-            width: "100%", padding: "10px", backgroundColor: AMBER, color: INK,
-            border: "none", borderRadius: 4, fontFamily: "'JetBrains Mono', monospace",
-            fontSize: "0.7rem", fontWeight: 500, letterSpacing: "0.05em", cursor: "pointer",
-            transition: "background-color 0.2s ease, transform 0.2s ease",
-          }}
-          onMouseEnter={(e) => { e.target.style.backgroundColor = "#ffc35e"; e.target.style.transform = "translateY(-1px)"; }}
-          onMouseLeave={(e) => { e.target.style.backgroundColor = AMBER; e.target.style.transform = "translateY(0)"; }}
-        >
-          Export PNG
-        </button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            type="button"
+            onClick={onExportPNG}
+            style={{
+              flex: 1, padding: "10px", backgroundColor: AMBER, color: INK,
+              border: "none", borderRadius: 4, fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "0.65rem", fontWeight: 500, letterSpacing: "0.05em", cursor: "pointer",
+              transition: "background-color 0.2s ease, transform 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.backgroundColor = "#ffc35e"; e.target.style.transform = "translateY(-1px)"; }}
+            onMouseLeave={(e) => { e.target.style.backgroundColor = AMBER; e.target.style.transform = "translateY(0)"; }}
+          >
+            Export PNG
+          </button>
+          <button
+            type="button"
+            onClick={onExportSVG}
+            style={{
+              flex: 1, padding: "10px", backgroundColor: TEAL, color: INK,
+              border: "none", borderRadius: 4, fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "0.65rem", fontWeight: 500, letterSpacing: "0.05em", cursor: "pointer",
+              transition: "background-color 0.2s ease, transform 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.backgroundColor = "#7dfce0"; e.target.style.transform = "translateY(-1px)"; }}
+            onMouseLeave={(e) => { e.target.style.backgroundColor = TEAL; e.target.style.transform = "translateY(0)"; }}
+          >
+            Export SVG
+          </button>
+        </div>
         <button
           type="button"
           onClick={onClearGrid}
@@ -1075,6 +1091,53 @@ export default function GridPage({ onBack, initialPattern }) {
     link.click();
   };
 
+  const handleExportSVG = () => {
+    const cellSize = 32;
+    const labelPad = 28;
+    const width = cols * cellSize + labelPad;
+    const height = rows * cellSize + labelPad;
+
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
+    svg += `<rect width="${width}" height="${height}" fill="#FFFFFF"/>`;
+
+    grid.forEach((color, i) => {
+      if (color) {
+        const x = (i % cols) * cellSize + labelPad;
+        const y = Math.floor(i / cols) * cellSize + labelPad;
+        svg += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" fill="${color}"/>`;
+      }
+    });
+
+    svg += `<g stroke="#D1D5DB" stroke-width="0.5">`;
+    for (let c = 0; c <= cols; c++) {
+      svg += `<line x1="${c * cellSize + labelPad}" y1="${labelPad}" x2="${c * cellSize + labelPad}" y2="${height}"/>`;
+    }
+    for (let r = 0; r <= rows; r++) {
+      svg += `<line x1="${labelPad}" y1="${r * cellSize + labelPad}" x2="${width}" y2="${r * cellSize + labelPad}"/>`;
+    }
+    svg += `</g>`;
+
+    svg += `<g fill="#9CA0B4" font-family="monospace" font-size="10" text-anchor="middle" dominant-baseline="middle">`;
+    for (let c = 1; c <= cols; c++) {
+      svg += `<text x="${(c - 0.5) * cellSize + labelPad}" y="${labelPad / 2}">${c}</text>`;
+    }
+    svg += `</g>`;
+    svg += `<g fill="#9CA0B4" font-family="monospace" font-size="10" text-anchor="end" dominant-baseline="middle">`;
+    for (let r = 1; r <= rows; r++) {
+      svg += `<text x="${labelPad - 6}" y="${(r - 0.5) * cellSize + labelPad}">${r}</text>`;
+    }
+    svg += `</g>`;
+    svg += `</svg>`;
+
+    const blob = new Blob([svg], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = `craftmatrix-${cols}x${rows}.svg`;
+    link.href = url;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   if (!gridCreated) {
     return (
       <div
@@ -1137,6 +1200,7 @@ export default function GridPage({ onBack, initialPattern }) {
         onAddToPalette={handleAddToPalette}
         onClearGrid={handleClearGrid}
         onExportPNG={handleExportPNG}
+        onExportSVG={handleExportSVG}
         onSelectColor={setSelectedColor}
         onColorChange={setSelectedColor}
         canUndo={canUndo}

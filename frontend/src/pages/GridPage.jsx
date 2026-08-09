@@ -6,7 +6,7 @@ import useUndoRedo from "../hooks/useUndoRedo";
 
 const MAX_RECENT_COLORS = 8;
 
-function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash, onPickScreenColor, recentColors, zoom, setZoom, showGridLines, setShowGridLines, onSave, onLoad, onShowShortcuts, symmetry, setSymmetry }) {
+function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, setShowColorWheel, onAddToPalette, onClearGrid, onExportPNG, onSelectColor, onColorChange, canUndo, canRedo, onUndo, onRedo, activeTool, onSelectTool, onSelectToolWithHistory, eyedropperFlash, onPickScreenColor, recentColors, zoom, setZoom, showGridLines, setShowGridLines, onSave, onLoad, onShowShortcuts, symmetry, setSymmetry, onRotateLeft, onRotateRight, onFlipHorizontal, onFlipVertical }) {
   return (
     <div style={{
       width: 300, minWidth: 300, height: "100vh", overflowY: "auto",
@@ -346,6 +346,83 @@ function Sidebar({ onBack, cols, rows, selectedColor, palette, showColorWheel, s
         >
           &#8631; Redo
         </button>
+      </div>
+
+      <div style={{ height: 1, backgroundColor: LINE }} />
+
+      {/* Rotate / Flip */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          Transform
+        </span>
+        <div style={{ display: "flex", gap: 6 }}>
+          <button
+            type="button"
+            onClick={onRotateLeft}
+            title="Rotate Left 90°"
+            style={{
+              flex: 1, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: "transparent", border: `1px solid ${LINE}`, borderRadius: 4,
+              cursor: "pointer", color: MUTED, fontSize: "0.7rem",
+              fontFamily: "'JetBrains Mono', monospace",
+              transition: "border-color 0.2s ease, color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = LINE; e.target.style.color = MUTED; }}
+          >
+            ↺ Left
+          </button>
+          <button
+            type="button"
+            onClick={onRotateRight}
+            title="Rotate Right 90°"
+            style={{
+              flex: 1, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: "transparent", border: `1px solid ${LINE}`, borderRadius: 4,
+              cursor: "pointer", color: MUTED, fontSize: "0.7rem",
+              fontFamily: "'JetBrains Mono', monospace",
+              transition: "border-color 0.2s ease, color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = LINE; e.target.style.color = MUTED; }}
+          >
+            Right ↻
+          </button>
+        </div>
+        <div style={{ display: "flex", gap: 6 }}>
+          <button
+            type="button"
+            onClick={onFlipHorizontal}
+            title="Flip Horizontal"
+            style={{
+              flex: 1, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: "transparent", border: `1px solid ${LINE}`, borderRadius: 4,
+              cursor: "pointer", color: MUTED, fontSize: "0.7rem",
+              fontFamily: "'JetBrains Mono', monospace",
+              transition: "border-color 0.2s ease, color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = LINE; e.target.style.color = MUTED; }}
+          >
+            ↔ Flip H
+          </button>
+          <button
+            type="button"
+            onClick={onFlipVertical}
+            title="Flip Vertical"
+            style={{
+              flex: 1, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: "transparent", border: `1px solid ${LINE}`, borderRadius: 4,
+              cursor: "pointer", color: MUTED, fontSize: "0.7rem",
+              fontFamily: "'JetBrains Mono', monospace",
+              transition: "border-color 0.2s ease, color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.target.style.borderColor = AMBER; e.target.style.color = AMBER; }}
+            onMouseLeave={(e) => { e.target.style.borderColor = LINE; e.target.style.color = MUTED; }}
+          >
+            ↕ Flip V
+          </button>
+        </div>
       </div>
 
       <div style={{ height: 1, backgroundColor: LINE }} />
@@ -758,6 +835,66 @@ export default function GridPage({ onBack, initialPattern }) {
     reset(Array.from({ length: cols * rows }, () => null));
   };
 
+  const getGrid2D = () => {
+    const grid2D = [];
+    for (let r = 0; r < rows; r++) {
+      grid2D.push(grid.slice(r * cols, (r + 1) * cols));
+    }
+    return grid2D;
+  };
+
+  const handleRotateRight = () => {
+    const grid2D = getGrid2D();
+    const newRows = cols;
+    const newCols = rows;
+    const newGrid = [];
+    for (let r = 0; r < newRows; r++) {
+      for (let c = 0; c < newCols; c++) {
+        newGrid.push(grid2D[newCols - 1 - c][r]);
+      }
+    }
+    setCols(newCols);
+    setRows(newRows);
+    reset(newGrid);
+  };
+
+  const handleRotateLeft = () => {
+    const grid2D = getGrid2D();
+    const newRows = cols;
+    const newCols = rows;
+    const newGrid = [];
+    for (let r = 0; r < newRows; r++) {
+      for (let c = 0; c < newCols; c++) {
+        newGrid.push(grid2D[c][newRows - 1 - r]);
+      }
+    }
+    setCols(newCols);
+    setRows(newRows);
+    reset(newGrid);
+  };
+
+  const handleFlipHorizontal = () => {
+    const grid2D = getGrid2D();
+    const newGrid = [];
+    for (let r = 0; r < rows; r++) {
+      for (let c = cols - 1; c >= 0; c--) {
+        newGrid.push(grid2D[r][c]);
+      }
+    }
+    reset(newGrid);
+  };
+
+  const handleFlipVertical = () => {
+    const grid2D = getGrid2D();
+    const newGrid = [];
+    for (let r = rows - 1; r >= 0; r--) {
+      for (let c = 0; c < cols; c++) {
+        newGrid.push(grid2D[r][c]);
+      }
+    }
+    reset(newGrid);
+  };
+
   const handleSave = () => {
     const data = { cols, rows, grid, palette, selectedColor };
     localStorage.setItem("craftmatrix-project", JSON.stringify(data));
@@ -922,6 +1059,10 @@ export default function GridPage({ onBack, initialPattern }) {
         onShowShortcuts={() => setShowShortcuts(true)}
         symmetry={symmetry}
         setSymmetry={setSymmetry}
+        onRotateLeft={handleRotateLeft}
+        onRotateRight={handleRotateRight}
+        onFlipHorizontal={handleFlipHorizontal}
+        onFlipVertical={handleFlipVertical}
       />
       <GridCanvas
         cols={cols}
